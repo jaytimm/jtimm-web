@@ -1,0 +1,195 @@
+---
+title: 'visualizing topic models with crosstalk'
+author: ''
+date: '2021-07-11'
+slug: visualizing-topics
+categories: []
+tags:
+  - rstats
+banner: banners/ts2.png
+description: 'A quick demo: interactive topic model summary'
+---
+
+
+## Introduction
+
+A simple post detailing the use of the `crosstalk` package to visualize and investigate topic model results interactively.  As an example, we investigate the topic structure of correspondences from the [Founders Online](https://founders.archives.gov/) corpus -- focusing on letters generated during the Washington Presidency, ca. 1789-1787.   
+
+
+
+## Founders Online corpus
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+
+I have scraped the entirety of the Founders Online corpus, and make it available as a collection of RDS files [here](https://github.com/jaytimm/founders-online-corpus).  The Washington Presidency portion of the corpus is comprised of ~28K letters/correspondences, ~10.5 million words.
+
+
+```{r include=FALSE}
+filepath <- '/home/jtimm/pCloudDrive/GitHub/git-projects/FoundersArchiveCorpus/data/Washington_Presidency.rds'
+```
+
+
+```{r eval=FALSE}
+wash <- readRDS(filepath) %>%
+  mutate(wc = tokenizers::count_words(text)) %>%
+  filter(wc < 1000)
+```
+
+
+
+## Extract named entities
+
+In my experience, topic models work best with some type of supervision, as topic composition can often be overwhelmed by more frequent word forms.  Simple frequency filters can be helpful, but they can also kill informative forms as well. Here, we focus on named entities using the `spacyr` package.
+.
+
+```{r eval=FALSE}
+#spacyr::spacy_install()
+ent1 <- spacyr::entity_extract(spacyr::spacy_parse(wash0$text))
+```
+
+
+```{r include=FALSE}
+ent1 <- readRDS('/home/jtimm/pCloudDrive/GitHub/data_sets/topics-ner/topics_ner.rds')
+```
+
+
+The resulting data structure, then, is a data frame in which each letter is represented by its constituent named entities. 
+
+```{r}
+ent2 <- ent1 %>%
+  mutate(entity = tolower(entity)) %>%
+  group_by(entity) %>%
+  mutate(bign = length(unique(doc_id))) %>%
+  ungroup() %>%
+  count(doc_id, entity, bign) %>%
+  filter(bign > 3, nchar(entity) > 4)
+```
+
+
+
+
+## Build topic model
+
+Next, we cast the entity-based text representations into a sparse matrix, and build a LDA topic model using the `text2vec` package. A 50 topic solution is specified.  Model results are summarized and extracted using the `PubmedMTK::pmtk_summarize_lda` function, which is designed with `text2vec` output in mind.
+
+```{r message=FALSE, warning=FALSE}
+dtm <- tidytext::cast_sparse(data = ent2,
+                             row = doc_id,
+                             column = entity,
+                             value = n)
+
+lda <- text2vec::LDA$new(n_topics = 50) 
+fit <- lda$fit_transform(dtm, progressbar = F)
+
+tm_summary <- PubmedMTK::pmtk_summarize_lda(
+  lda = lda, topic_feats_n = 15)
+```
+
+
+
+## tSNE
+
+Based on the `topic-word-ditribution` output from the topic model, we cast a proper topic-word sparse matrix for input to the `Rtsne` function.
+
+```{r}
+tmat <- tidytext::cast_sparse(data = tm_summary$topic_word_dist,
+                              row = topic_id,
+                              column = feature,
+                              value = beta)
+
+set.seed(99)
+tsne <- Rtsne::Rtsne(X = as.matrix(tmat), 
+                     check_duplicates = T,
+                     perplexity = 15)
+
+tsne0 <- data.frame(topic_id = as.integer(rownames(tmat)), tsne$Y)
+```
+
+
+```{r eval=FALSE, include=FALSE}
+saveRDS(tsne0,'/home/jtimm/pCloudDrive/GitHub/data_sets/topics-ner/two_ds.rds')
+saveRDS(tm_summary,'/home/jtimm/pCloudDrive/GitHub/data_sets/topics-ner/tm_summary.rds')
+```
+
+
+
+## Crosstalk widget
+
+Before getting into `crosstalk`, we filter the `topic-word-ditribution` to the top 10 loading terms per topic.  Then we create `SharedData` objects. The `group` and `key` parameters specify where the action will be in the `crosstalk` widget. 
+
+```{r}
+x1 <- tm_summary$topic_word_dist %>%
+  group_by(topic_id) %>%
+  slice_max(order_by = beta, n = 10) %>%
+  mutate(beta = round(beta, 3)) 
+
+sd_points <- crosstalk::SharedData$new(tsne0, 
+                                       group = "tm", 
+                                       key = ~topic_id)
+sd_features <- crosstalk::SharedData$new(x1, 
+                                         group = "tm", 
+                                         key = ~topic_id)
+```
+
+
+
+**And then the widget**.  The user can hover on the topic tSNE plot to investigate terms underlying each topic.   
+
+```{r message=FALSE, warning=FALSE, out.width='100%'}
+library(plotly)
+library(magrittr)
+library(ggplot2)
+
+p <- sd_points %>%
+  
+  ggplot(aes(x = X1, 
+             y = X2,
+             label = topic_id)) + 
+  
+  geom_hline(yintercept = 0, color = 'gray') +
+  geom_vline(xintercept = 0, color = 'gray') +
+  
+  ggplot2::geom_point(size = 10, 
+                      color = '#1a476f',
+                      alpha = 0.5) +
+  geom_text(size = 3) +
+  theme_minimal() +
+  theme(legend.position = 'none') 
+
+p1 <- plotly::ggplotly(p) %>% 
+  plotly::layout(showlegend = F,
+                 autosize = T) %>%
+  plotly::style(hoverinfo = 'none') %>%
+  plotly::highlight(on = 'plotly_hover',
+                    opacityDim = .75)
+
+t1 <- sd_features %>%
+  DT::datatable(rownames = FALSE,
+                width = "100%",
+                options = list(dom = 't',
+                               pageLength = 10)) %>%
+  
+  DT::formatStyle(names(x1[,3]),
+                  background = DT::styleColorBar(range(x1[,3]),
+                                                 '#e76a53'),
+                  backgroundSize = '80% 70%',
+                  backgroundRepeat = 'no-repeat',
+                  backgroundPosition = 'right')
+```
+
+
+
+
+### Topic model summary of the Washington Presidency in letters
+
+```{r}
+crosstalk::bscols (list(p1, t1))
+```
+
+
+## Summary
+
+For a stand-alone `flexdashboard`/html version of things, see this [RPubs post](https://rpubs.com/jtimm/790468).

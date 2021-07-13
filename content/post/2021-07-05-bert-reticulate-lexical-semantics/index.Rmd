@@ -195,8 +195,7 @@ p <- ggplot2::ggplot(tsne_clean,
   ggthemes::scale_colour_economist() +
   ggtitle('further-farther') 
 
-plotly::ggplotly(p,
-                 tooltip = 'text') 
+plotly::ggplotly(p, tooltip = 'text') 
 ```
 
 
