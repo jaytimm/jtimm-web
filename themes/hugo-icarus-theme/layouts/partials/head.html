@@ -3,12 +3,11 @@
 <head>
     <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} &middot; {{ .Site.Title }}{{ end }}</title>
     {{ hugo.Generator }}
-    <meta charset="utf-8">
+    <meta charset="utf-8">   
     <meta name="twitter:creator" content="{{ .Site.Params.twitterAuthor }}">
     <meta name="twitter:site" content="{{ .Site.Params.twitterSite }}">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://jtimm.net/{{ .Params.twitterImg }}" 
-    
+    <meta name="twitter:image" content="https://jtimm.net/{{ .Params.twitterImg }}">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     {{ with .Site.Params.author }}<meta name="author" content="{{ . }}">{{ end }}
     {{ with .Description }}
