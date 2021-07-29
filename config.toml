@@ -39,6 +39,8 @@ theme = "hugo-icarus-theme"
     # Add custom assets with their paths relative to the static folder
 	custom_css = []
 	custom_js  = []
+	
+    twitterAuthor = "@DrJayTimm"
 
 # Create custom menu entries by defining a label and a link for
 # them. Since you can also link posts, you've the option the
