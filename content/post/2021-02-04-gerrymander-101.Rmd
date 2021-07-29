@@ -2,6 +2,7 @@
 title: 'Cracking and packing: a simple gerrymander simulation'
 author: ''
 date: '2021-02-04'
+twitterImg: /post/2021-02-04-gerrymander-101_files/figure-html/unnamed-chunk-8-1.png
 slug: gerrymander-101
 tags: 
   - rstats
@@ -13,6 +14,7 @@ link-citations: yes
 description: 'Gerrymandering & R: Part 1'
 banner: banners/gerry.png
 ---
+
 
 > A brief note on gerrymandering, and cracking & packing. Specifically, a simple simulation demonstrating how gross partisan asymmetries in the composition of state legislatures can be crafted from statewide populations evenly split between two parties.  
 
