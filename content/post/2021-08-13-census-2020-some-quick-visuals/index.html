@@ -1,0 +1,228 @@
+---
+title: 'census 2020: some quick visuals'
+author: ''
+date: '2021-08-13'
+slug: census-2020-some-quick-visuals
+categories: []
+tags:
+  - rstats
+  - census
+  - geo
+banner: banners/census2020.png
+description: 'Ealry access to 2020 Census data via the PL94171 package'
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="intro" class="section level2">
+<h2>Intro</h2>
+<p>A quick/simple post demonstrating how to access Census 2020 counts using the <a href="https://github.com/CoryMcCartan/PL94171">PL94171</a> package. Census data won’t be API-accessible until ~late September; however, these data are available for redistricting purposes, albeit in a funky format. The <code>PL94171</code> package downloads, re-structures, and tidies these files for super convenient use.</p>
+</div>
+<div id="get-data" class="section level2">
+<h2>Get data</h2>
+<p>Using several of the functions included in the <code>PL94171</code> package, we build a simple wrapper below to extract census counts for multiple census years.</p>
+<pre class="r"><code>library(tidyverse)
+
+get_pl_data &lt;- function(x, state, level){
+
+  y &lt;- PL94171::pl_read(PL94171::pl_url(state, x))
+  pl &lt;- PL94171::pl_subset(y, sumlev = level)
+  PL94171::pl_select_standard(pl, clean_names = TRUE)
+}</code></pre>
+<p>The we apply the function, collecting county-level data for the state of New Mexico for the last three decennial censuses.</p>
+<pre class="r"><code>yrs &lt;- c(2000, 2010, 2020)
+
+x0 &lt;- lapply(yrs, get_pl_data, state = &#39;NM&#39;, level = &#39;050&#39;)
+names(x0) &lt;- yrs
+x1 &lt;- data.table::rbindlist(x0, idcol = &#39;year&#39;)</code></pre>
+</div>
+<div id="county-level-change-by-sub-group-2000-2020" class="section level2">
+<h2>County level change by sub-group: 2000-2020</h2>
+<p>Below we re-structure the data some, and download New Mexico county information via the <code>tigris</code> package.</p>
+<pre class="r"><code>x2 &lt;- x1 %&gt;%
+  select(year, GEOID, pop:pop_two) %&gt;%
+  gather(key = &#39;race&#39;, value = &#39;count&#39;, -year:-pop) %&gt;%
+  mutate(prop = count/pop)</code></pre>
+<pre class="r"><code>head(x2) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">year</th>
+<th align="left">GEOID</th>
+<th align="right">pop</th>
+<th align="left">race</th>
+<th align="right">count</th>
+<th align="right">prop</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2000</td>
+<td align="left">35001</td>
+<td align="right">556678</td>
+<td align="left">pop_hisp</td>
+<td align="right">233565</td>
+<td align="right">0.4195693</td>
+</tr>
+<tr class="even">
+<td align="left">2000</td>
+<td align="left">35003</td>
+<td align="right">3543</td>
+<td align="left">pop_hisp</td>
+<td align="right">679</td>
+<td align="right">0.1916455</td>
+</tr>
+<tr class="odd">
+<td align="left">2000</td>
+<td align="left">35005</td>
+<td align="right">61382</td>
+<td align="left">pop_hisp</td>
+<td align="right">26904</td>
+<td align="right">0.4383044</td>
+</tr>
+<tr class="even">
+<td align="left">2000</td>
+<td align="left">35006</td>
+<td align="right">25595</td>
+<td align="left">pop_hisp</td>
+<td align="right">8555</td>
+<td align="right">0.3342450</td>
+</tr>
+<tr class="odd">
+<td align="left">2000</td>
+<td align="left">35007</td>
+<td align="right">14189</td>
+<td align="left">pop_hisp</td>
+<td align="right">6739</td>
+<td align="right">0.4749454</td>
+</tr>
+<tr class="even">
+<td align="left">2000</td>
+<td align="left">35009</td>
+<td align="right">45044</td>
+<td align="left">pop_hisp</td>
+<td align="right">13685</td>
+<td align="right">0.3038140</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>nm &lt;- tigris::counties(state = &#39;NM&#39;, cb = T)</code></pre>
+<p>A homemade palette:</p>
+<pre class="r"><code>gen_pal &lt;- c(&#39;#ead8c3&#39;, 
+             &#39;#eeeeee&#39;,
+             &#39;#437193&#39;,
+             &#39;#7da6aa&#39;,
+             &#39;#b0bcc1&#39;,
+             &#39;#55752f&#39;, 
+             &#39;#dae2ba&#39;,
+             &#39;#eb7f6b&#39;
+             )</code></pre>
+<p>Population change by sub-group for a sample of counties in New Mexico:</p>
+<pre class="r"><code>set.seed(999)
+x2 %&gt;%
+  inner_join(nm %&gt;% sample_n(12)) %&gt;%
+  
+  ggplot(aes(x = as.integer(year), 
+             y = prop, 
+             fill = race)) +
+  geom_area(stat = &quot;identity&quot;,
+            color = &#39;white&#39;,
+            alpha = 0.85) +
+  geom_hline(yintercept = .5, 
+             linetype = 4,
+             color = &#39;white&#39;) +
+  scale_fill_manual(values = gen_pal) +
+  scale_x_continuous(breaks=seq(2000,2020,10)) +
+  xlab(&#39;&#39;) + ylab(&#39;&#39;) +
+  theme_minimal() +
+  theme(legend.position=&quot;bottom&quot;,
+        legend.title = element_blank()) +
+  facet_wrap(~NAME, ncol = 4) +
+  ggtitle(&#39;Population composition by county: 2000-2020&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="a-quick-map" class="section level2">
+<h2>A quick map</h2>
+<pre class="r"><code>x3 &lt;- x2 %&gt;%
+  filter(race == &#39;pop_hisp&#39; &amp;year != 2000) %&gt;%
+  select(year, GEOID, prop) %&gt;%
+  spread(year, prop) %&gt;%
+  mutate(delta = round(`2020` - `2010`, 3))
+
+head(x3) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">GEOID</th>
+<th align="right">2010</th>
+<th align="right">2020</th>
+<th align="right">delta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">35001</td>
+<td align="right">0.4785787</td>
+<td align="right">0.4870780</td>
+<td align="right">0.008</td>
+</tr>
+<tr class="even">
+<td align="left">35003</td>
+<td align="right">0.1903356</td>
+<td align="right">0.1682034</td>
+<td align="right">-0.022</td>
+</tr>
+<tr class="odd">
+<td align="left">35005</td>
+<td align="right">0.5200548</td>
+<td align="right">0.5693479</td>
+<td align="right">0.049</td>
+</tr>
+<tr class="even">
+<td align="left">35006</td>
+<td align="right">0.3650461</td>
+<td align="right">0.3181216</td>
+<td align="right">-0.047</td>
+</tr>
+<tr class="odd">
+<td align="left">35007</td>
+<td align="right">0.4718545</td>
+<td align="right">0.4745297</td>
+<td align="right">0.003</td>
+</tr>
+<tr class="even">
+<td align="left">35009</td>
+<td align="right">0.3951753</td>
+<td align="right">0.4500516</td>
+<td align="right">0.055</td>
+</tr>
+</tbody>
+</table>
+<p>The map below details percent change for the Hispanic population in New Mexico from 2010 to 2020.</p>
+<pre class="r"><code>nm %&gt;%
+  left_join(x3) %&gt;%
+  ggplot() + 
+  geom_sf(aes(fill = delta),
+          color = &#39;darkgray&#39;,
+          alpha = .85,
+          lwd = .2) +
+
+  scale_fill_distiller(palette = &quot;BrBG&quot;,  
+                        limit = max(abs(x3$delta)) * c(-1, 1)) +
+
+  theme_minimal() + 
+  theme(axis.title.x=element_blank(), 
+          axis.text.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          legend.title=element_blank(),
+          legend.position = &#39;bottom&#39;, 
+          complete = F) +
+  labs(title = &#39;Percent Change Hispanic Population in New Mexico&#39;, 
+       subtitle = &#39;by County: 2010 to 2020&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+<div id="census-2020" class="section level2">
+<h2>Census 2020</h2>
+</div>
