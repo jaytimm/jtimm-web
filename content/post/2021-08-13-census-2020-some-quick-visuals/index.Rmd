@@ -112,7 +112,8 @@ x2 %>%
   xlab('') + ylab('') +
   theme_minimal() +
   theme(legend.position="bottom",
-        legend.title = element_blank()) +
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90, hjust = 1)) +
   facet_wrap(~NAME, ncol = 4) +
   ggtitle('Population composition by county: 2000-2020')
 ```
@@ -159,4 +160,3 @@ nm %>%
 
 
 ## Census 2020
-

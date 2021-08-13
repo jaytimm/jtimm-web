@@ -139,7 +139,8 @@ x2 %&gt;%
   xlab(&#39;&#39;) + ylab(&#39;&#39;) +
   theme_minimal() +
   theme(legend.position=&quot;bottom&quot;,
-        legend.title = element_blank()) +
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90, hjust = 1)) +
   facet_wrap(~NAME, ncol = 4) +
   ggtitle(&#39;Population composition by county: 2000-2020&#39;)</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
