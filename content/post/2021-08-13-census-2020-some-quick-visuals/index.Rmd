@@ -8,13 +8,14 @@ tags:
   - rstats
   - census
   - geo
+twitterImg: img/census2020.png
 banner: banners/census2020.png
 description: 'Ealry access to 2020 Census data via the PL94171 package'
 ---
 
 ## Intro 
 
-> A quick/simple post: using the [PL94171](https://github.com/CoryMcCartan/PL94171) package to access Census 2020 counts.  Census data won't be API-accessible until ~late September; these data are available, however, for redistricting purposes -- albeit in a funky format.  The `PL94171` package can be used to download and re-structure these files for super convenient use. (!)  Some quick visualizations of demographic change in the state of New Mexico.
+> A quick/simple post using the [PL94171](https://github.com/CoryMcCartan/PL94171) package to access Census 2020 counts.  While census data will not be API-accessible until October, redistricting files are presently available -- the `PL94171` package facilitates easy access to these files. Some quick visualizations of demographic change in the state of New Mexico.
 
 
 ## Get data
