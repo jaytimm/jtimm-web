@@ -15,6 +15,7 @@ description: 'Methods for quantifying political bias of online news media'
 banner: banners/url.png
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 <div id="TOC">
 <ul>
@@ -32,7 +33,7 @@ banner: banners/url.png
 <h2>Introduction</h2>
 <p>This post provides a brief description of methods for quantifying political bias of online news media based on the media-sharing habits of US lawmakers on Twitter. I have discussed this set of methods in <a href="https://www.jtimm.net/2018/11/03/twitter-political-ideology-and-the-115-us-senate/">a previous post</a>. Here, the focus is on a more streamlined (and multi-threaded) approach to <strong>resolving shortened URLs</strong> via the <code>quicknews</code> package. We also present unsupervised methods for visualizing media bias in two-dimensional space via tSNE, and compare results to the manually curated fact and bias checking online resource, <a href="https://mediabiasfactcheck.com/">Media Bias/Fact Check</a> (MBFC), with some fairly nice results.</p>
 <pre class="r"><code>library(tidyverse)
-localdir &lt;- &#39;/home/jtimm/jt_work/GitHub/data_sets&#39;
+localdir &lt;- &#39;/home/jtimm/pCloudDrive/GitHub/data_sets&#39;
 ##  devtools::install_github(&quot;jaytimm/quicknews&quot;)</code></pre>
 </div>
 <div id="tweet-set" class="section level2">
@@ -44,10 +45,9 @@ house_tweets &lt;- readRDS(&#39;house116-sample-urls.rds&#39;) %&gt;%
 </div>
 <div id="media-bias-data-set" class="section level2">
 <h2>Media bias data set</h2>
-<p><a href="https://mediabiasfactcheck.com/">Media Bias/Fact Check</a> is a fact-checking organization that classifies online news sources along two dimensions: (1) political bias and (2) factuality. These two scores (for ~850 sources) have been extracted by <span class="citation">Baly et al. (<a href="#ref-baly:2020:ACL2020" role="doc-biblioref">2020</a>)</span>, and made available in tabular format <a href="https://github.com/ramybaly/News-Media-Reliability">here</a>.</p>
-<pre class="r"><code>setwd(&#39;/home/jtimm/jt_work/GitHub/packages/quicknews/data-raw&#39;)
-## emnlp18 &lt;- read.csv(&#39;emnlp18-corpus.tsv&#39;, sep = &#39;\t&#39;)
-acl2020 &lt;- read.csv(&#39;acl2020-corpus.tsv&#39;, sep = &#39;\t&#39;)</code></pre>
+<p><a href="https://mediabiasfactcheck.com/">Media Bias/Fact Check</a> is a fact-checking organization that classifies online news sources along two dimensions: (1) political bias and (2) factuality. These two scores (for ~850 sources) have been extracted by <span class="citation"><a href="#ref-baly:2020:ACL2020" role="doc-biblioref">Baly et al.</a> (<a href="#ref-baly:2020:ACL2020" role="doc-biblioref">2020</a>)</span>, and made available in tabular format <a href="https://github.com/ramybaly/News-Media-Reliability">here</a>.</p>
+<pre class="r"><code>url0 &lt;- &#39;https://raw.githubusercontent.com/ramybaly/News-Media-Reliability/master/data/acl2020/corpus.tsv&#39;
+acl2020 &lt;- read.csv(url(url0), sep = &#39;\t&#39;)</code></pre>
 <p>A sample of this data set is presented below.</p>
 <pre class="r"><code>set.seed(221)
 acl2020 %&gt;%
@@ -310,9 +310,9 @@ tsne_clean %&gt;%
 </div>
 <div id="resources" class="section level2 unnumbered">
 <h2>Resources</h2>
-<div id="refs" class="references">
-<div id="ref-baly:2020:ACL2020">
-<p>Baly, Ramy, Georgi Karadzhov, Jisun An, Haewoon Kwak, Yoan Dinkov, Ahmed Ali, James Glass, and Preslav Nakov. 2020. “What Was Written Vs. Who Read It: News Media Profiling Using Text Analysis and Social Media Context.” In <em>Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics</em>. ACL ’20.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-baly:2020:ACL2020" class="csl-entry">
+Baly, Ramy, Georgi Karadzhov, Jisun An, Haewoon Kwak, Yoan Dinkov, Ahmed Ali, James Glass, and Preslav Nakov. 2020. <span>“What Was Written Vs. Who Read It: News Media Profiling Using Text Analysis and Social Media Context.”</span> In <em>Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics</em>. ACL ’20.
 </div>
 </div>
 </div>
