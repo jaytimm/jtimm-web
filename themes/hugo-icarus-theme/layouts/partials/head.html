@@ -4,10 +4,6 @@
     <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} &middot; {{ .Site.Title }}{{ end }}</title>
     {{ hugo.Generator }}
     <meta charset="utf-8">   
-    <meta name="twitter:creator" content="{{ .Site.Params.twitterAuthor }}">
-    <meta name="twitter:site" content="{{ .Site.Params.twitterSite }}">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://jtimm.net/{{ .Params.twitterImg }}">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     {{ with .Site.Params.author }}<meta name="author" content="{{ . }}">{{ end }}
     {{ with .Description }}
@@ -47,6 +43,17 @@
 
     <!-- needs to be loaded first for following scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    {{ if .Params.twitterImg }}
+       <meta name="twitter:card" content="summary_large_image">
+       <meta name="twitter:image" content="https://jtimm.net/{{ .Params.twitterImg }}" >
+     {{ else }}
+       <meta name="twitter:card" content="summary">
+       <meta name="twitter:image" content="https://jtimm.net/logo.png" >
+    {{ end }}
+    <meta property="og:title" content="{{ .Title }}">
+    <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ if .IsPage }}{{ .Summary }}{{ else }}{{ with .Site.Params.description }}{{ . }}{{ end }}{{ end }}{{ end }}">
+    
+    
 </head>
 <body>
 <div class="container">
