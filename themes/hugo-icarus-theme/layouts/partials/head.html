@@ -51,6 +51,7 @@
        <meta name="twitter:image" content="https://jtimm.net/logo.png" >
     {{ end }}
     <meta property="og:title" content="{{ .Title }}">
+    <meta property="og:image" content="https://jtimm.net/{{ .Params.twitterImg }}">
     <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ if .IsPage }}{{ .Summary }}{{ else }}{{ with .Site.Params.description }}{{ . }}{{ end }}{{ end }}{{ end }}">
     
     
