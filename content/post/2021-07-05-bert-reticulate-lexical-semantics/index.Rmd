@@ -9,6 +9,7 @@ tags:
   - python
   - lexical-semantics
   - corpus-ling
+twitterImg: img/reticulate1.png
 banner: banners/bert.png
 description: 'Some notes on implementing reticulate, spacy, and BERT'
 ---
@@ -195,7 +196,7 @@ p <- ggplot2::ggplot(tsne_clean,
   ggthemes::scale_colour_economist() +
   ggtitle('further-farther') 
 
-plotly::ggplotly(p, tooltip = 'text') 
+plotly::ggplotly(p,  tooltip = 'text') 
 ```
 
 
