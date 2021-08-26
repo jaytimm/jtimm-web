@@ -7,10 +7,11 @@ categories: []
 tags:
   - rstats
   - corpus-ling
-twitterImg: img/qnews.png
+twitterImg: img/doc2vec.png
 banner: banners/doc2vec.png
 description: 'Extracting news articles'
 ---
+
 
 ## Introduction
 
