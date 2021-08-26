@@ -274,6 +274,7 @@ tsne0 <- data.frame(nid = rownames(both), tsne$Y) %>%
 
 ## Model visualization
 
+
 Finally, a quick plot using `plotly`.  MeSH terms represented as beige triangles; articles color-coded by search term (per results from `qnews_get_newsmeta`). 
 
 ```{r}
