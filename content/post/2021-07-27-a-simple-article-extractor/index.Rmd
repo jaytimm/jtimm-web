@@ -1,0 +1,312 @@
+---
+title: "article extraction, doc2vec & health news coverage in online media"
+author: ''
+date: '2021-08-26'
+slug: a-simple-article-extractor
+categories: []
+tags:
+  - rstats
+  - corpus-ling
+twitterImg: img/qnews.png
+banner: banners/doc2vec.png
+description: 'Extracting news articles'
+---
+
+## Introduction
+
+
+> This post demonstrates a simple procedure for extracting articles from online news sources using the [quicknews](https://github.com/jaytimm/quicknews) package.  We also demonstrate methods for entity extraction based on a controlled vocabulary (here, the [MeSH](https://www.nlm.nih.gov/mesh/meshhome.html) thesaurus & hierarchically-organized vocabulary), as well as a quick implementation of a `doc2vec` model.
+
+
+
+
+## Gather article metadata
+
+While primarily an article extractor, `quicknews` also includes a function for scraping article details from Google News, `qnews_get_newsmeta`.  Below we search for article metadata for eleven health-related terms. 
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+
+terms <- c('covid-19', 
+           'cancer',
+           'diabetes',
+           'mental health',
+           "alzeimer's disease",
+           'substance abuse',
+           'obesity',
+           'lung disease',
+           'heart disease',
+           'suicide',
+           'kidney disease')
+
+metas <- lapply(terms,
+                quicknews::qnews_get_newsmeta) %>%
+  ##
+  bind_rows() %>%
+  distinct(link, .keep_all = TRUE) %>%
+  mutate(nid = as.character(row_number())) %>%
+  select(nid, term:link)
+```
+
+
+A summary of search results are detailed below; the function returns a maximum of 100 articles per query term.  
+
+
+```{r message=FALSE, warning=FALSE}
+table(metas$term)
+```
+
+
+A sample set of records and metadata features:
+
+```{r}
+metas %>%
+  select(-title) %>%
+  sample_n(3) %>%
+  DT::datatable(rownames = F,
+                options = list(dom = 't'))
+```
+
+
+
+
+
+
+
+## Article extractor
+
+The `qnews_extract_article` function is designed for multi-threaded text extraction from HTML.   A simple approach, with no Java dependencies. HTML markups, comments, extraneous text, etc. are removed mostly via node type, node-final punctuation, character length, and a small dictionary of "junk" phrases. 
+
+```{r include=FALSE}
+#saveRDS(articles, '/home/jtimm/pCloudDrive/GitHub/data_sets/articles.rds')
+articles <- readRDS('/home/jtimm/pCloudDrive/GitHub/data_sets/articles.rds')
+```
+
+
+```{r eval=FALSE}
+articles <- quicknews::qnews_extract_article(url = metas$link, 
+                                             cores = 6)
+```
+
+
+Post article extraction, we add article metadata obtained from `qnews_get_newsmeta`.
+
+```{r}
+articles1 <- articles %>% 
+  
+  left_join(metas %>% 
+              select(nid, link, term, source), 
+            by = c('doc_id' = 'link')) 
+```
+
+
+
+## MeSH vocabulary
+
+
+The [PubmedMTK](https://github.com/jaytimm/PubmedMTK) package includes as a data frame the MeSH thesaurus & hierarchically-organized vocabulary – comprised of 2021 versions of `descriptor` & `trees` files made available via NLM-NIH.
+
+```{r}
+library(PubmedMTK)
+data("pmtk_tbl_mesh")
+health_terms <- pmtk_tbl_mesh[!duplicated(pmtk_tbl_mesh$TermName),] %>%
+  mutate(DescriptorName = gsub(' ', '_', DescriptorName),
+         TermName = gsub(' ', '_', TermName)) %>%
+  
+  filter(!cats %in% c(## 'Chemicals and Drugs', 
+                        'Geographicals', 
+                        'Publication Characteristics',
+                        'Humanities',
+                        #'Named Groups',
+                        'Information Science')) %>%
+  filter(!TermName %in% c('who', 'will')) %>%
+  filter(!grepl(',', TermName)) %>%
+  select(DescriptorName, TermName)
+```
+
+
+**The dictionary is designed with concept normalization in mind.**  *Descriptors* serve as category/concept names; *terms* are text instantiations of a given category/concept. The table below demonstrates this relationship for the concept "heart failure."
+
+```{r}
+hf <- health_terms %>%
+  filter(DescriptorName == 'heart_failure') 
+
+hf %>%
+  head() %>%
+  DT::datatable(rownames = F,
+                options = list(dom = 't'))
+```
+
+
+
+Examples of "heart failure" from the online news corpus are highlighted below: 
+
+```{r}
+egs <- PubmedMTK::pmtk_locate_term(text = articles1$text,
+                                   doc_id = c(1:nrow(articles1)),
+                                   term = gsub('_', ' ', hf$TermName),
+                                   stem = F,
+                                   window = 10)
+
+egs$kwic <- paste0('... ', egs$lhs, 
+                   ' <span style="background-color:lightblue">', 
+                   egs$instance, '</span> ', egs$rhs, ' ...')
+
+egs %>%
+  group_by(toupper(instance) )%>%
+  slice(1:2) %>%
+  ungroup() %>%
+  select(doc_id, kwic) %>%
+  DT::datatable(rownames = F,
+                escape = F,
+                options = list(dom = 't'))
+```
+
+
+
+
+## Some text processing
+
+Here, some simple text processing procedures to facilitate concept normalization via the MeSH lexicon.  Below, we (1) tokenize news articles via the `corpus::text_tokens` function, and (2) cast tokens into a data frame.  (A more complete summary of a generic NLP workflow can be found [here](https://github.com/jaytimm/nlp-guide-r).)
+
+```{r}
+a1 <- corpus::text_tokens(x = articles1$text)
+names(a1) <- articles1$nid
+
+df <- reshape2::melt(a1)
+data.table::setDT(df)
+data.table::setnames(df,
+                     c("value", "L1"),
+                     c("token","doc_id"),
+                     skip_absent = TRUE) 
+```
+
+
+
+**The next step is to recode multi-word phrases.**  MeSH includes thousands of terms/descriptors comprised of more than one word, eg, "heart failure."  The `txt_recode_ngram` function from the [udpipe](https://github.com/bnosac/udpipe) package can be used to "phrasify" these multi-word expressions, such that subsequent NLP processes will identify them as single units of meaning (as, eg, "heart_failure").  
+
+```{r}
+health_terms$ngram <- stringr::str_count(health_terms$TermName,stringr::fixed('_')) + 1
+multis <- subset(health_terms, ngram > 1)  
+
+df$newness <- udpipe::txt_recode_ngram(tolower(df$token),
+                                       compound = c(multis$TermName),
+                                       ngram = c(multis$ngram),
+                                       sep = '_')
+```
+
+
+
+To normalize MeSH terms (in our health-related news corpus) to MeSH descriptors (or concepts), we join the MeSH lexicon to the tokenized data frame.  Moving forward, then, we have access to either term or descriptor (and any/all features included in the MeSH hierarchy).
+
+```{r}
+## join lexicon
+df1 <- data.table::setDT(health_terms)[df, on = "TermName == newness"]
+df1[, token_id := seq_len(.N), by = doc_id]
+df2 <- subset(df1, !is.na(TermName))
+```
+
+
+
+Lastly, we re-build corpus texts using descriptors instead of terms.  
+
+```{r}
+x3  <- df2 %>%
+  mutate(DescriptorName =ifelse(is.na(DescriptorName), 
+                                TermName, 
+                                DescriptorName)) %>%
+  group_by(doc_id) %>%
+  summarise(text = paste0(DescriptorName, collapse = ' ')) %>%
+  mutate(nwords = tokenizers::count_words(text)) %>%
+  filter(nwords < 1000 & nchar(text) > 0)
+```
+
+
+
+## doc2vec
+
+Per new normalized text, we use the [doc2vec](https://github.com/bnosac/doc2vec) package to build a 100 dimension distributed memory "Paragraph Vector" model.  
+
+```{r}
+set.seed(9)
+model.d2v <- doc2vec::paragraph2vec(x = x3, 
+                                    type = "PV-DM", 
+                                    dim = 100, 
+                                    iter = 20,
+                                    min_count = 3, 
+                                    lr = 0.05, 
+                                    threads = 1)
+```
+
+
+
+We then extract document & word embeddings from the model, and combine the two matrices.  **As the model situates documents and words in the same embedding space**, we can investigate the relatedness among (representations of) both MeSH terms and health-related news articles.
+
+
+```{r}
+embedding.words <- as.matrix(model.d2v, which = "words")
+embedding.docs <- as.matrix(model.d2v,   which = "docs")
+
+## subset embeddings to vocabs
+ebw <- embedding.words[rownames(embedding.words) %in% health_terms$DescriptorName,]
+both <- do.call(rbind, list(embedding.docs, ebw))
+```
+
+
+
+To visualize/explore these high dimensional representations, we implement tSNE via the `Rtsne` package. 
+
+```{r message=FALSE, warning=FALSE}
+set.seed(99)
+tsne <- Rtsne::Rtsne(X = both, 
+                     check_duplicates = T,
+                     perplexity = 25)
+
+tsne0 <- data.frame(nid = rownames(both), tsne$Y) %>%
+  left_join(articles1) %>%
+  mutate(type = ifelse(is.na(source), 'term', 'doc'),
+         nid = ifelse(!is.na(title), title, nid),
+         term = ifelse(is.na(term), 'term', term)) 
+```
+
+
+
+## Model visualization
+
+Finally, a quick plot using `plotly`.  MeSH terms represented as beige triangles; articles color-coded by search term (per results from `qnews_get_newsmeta`). 
+
+```{r}
+p <- tsne0 %>%
+  
+  mutate(id1 = stringr::str_wrap(string = nid,
+                                    width = 30,
+                                    indent = 1,
+                                    exdent = 1)) %>%
+  
+  ggplot2::ggplot(aes(x = X1,
+                      y = X2,
+                      text = id1,
+                      color = term,
+                      shape = type
+                      )) +
+  
+  geom_hline(yintercept = 0, color = 'gray') +
+  geom_vline(xintercept = 0, color = 'gray') +
+  
+  ggplot2::geom_point(size = 1.25) +
+  scale_color_manual(
+    values = colorRampPalette(ggthemes::stata_pal()(8))(12)) +
+  theme_minimal() +
+  theme(legend.position = 'right')
+
+plotly::ggplotly(p,
+                 height = 500, #width = 700,
+                 tooltip = 'text') %>%
+       plotly::layout(showlegend = T)
+```
+
+
+
+
+
+
