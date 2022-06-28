@@ -2,6 +2,7 @@ project:
   type: website
 
 website:
+  site-url: "https://www.jtimm.net"
   title: "Jason Timm"
   twitter-card: true
   opengraph: true
