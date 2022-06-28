@@ -1,0 +1,13 @@
+{
+  "listing": "/index.html",
+  "items": [
+    "/posts/incivility/index.html",
+    "/posts/entity-linking/index.html",
+    "/posts/text-class/index.html",
+    "/posts/demographic-inference/index.html",
+    "/posts/bert/index.html",
+    "/posts/cracking-and-packing/index.html",
+    "/posts/mapping-roll-calls/index.html",
+    "/posts/seven-generations/index.html"
+  ]
+}
