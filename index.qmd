@@ -1,5 +1,5 @@
 ---
-title: "Jason Timm"
+title: ""
 listing:
   contents: posts
   sort: "date desc"
