@@ -10,6 +10,8 @@ website:
         href: https://github.com/jaytimm
       - icon: twitter
         href: https://twitter.com/DrJayTimm
+  twitter-card: true
+
 format:
   html:
     theme: flatly.scss
