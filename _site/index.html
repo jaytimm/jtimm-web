@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.596">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Jason Timm - quarto-blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-listing/list.min.js"></script>
+<script src="site_libs/quarto-listing/quarto-listing.js"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script>
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Jason Timm</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html">About</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-left">
+      <h1 class="title">quarto-blog</h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(8)</span></div><div class="category" data-category="american politics">american politics <span class="quarto-category-count">(3)</span></div><div class="category" data-category="classification">classification <span class="quarto-category-count">(3)</span></div><div class="category" data-category="demographics">demographics <span class="quarto-category-count">(2)</span></div><div class="category" data-category="geospatial">geospatial <span class="quarto-category-count">(1)</span></div><div class="category" data-category="lexical semantics">lexical semantics <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ner">ner <span class="quarto-category-count">(1)</span></div><div class="category" data-category="nlp">nlp <span class="quarto-category-count">(2)</span></div><div class="category" data-category="python">python <span class="quarto-category-count">(2)</span></div><div class="category" data-category="twitter">twitter <span class="quarto-category-count">(2)</span></div></div></div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+
+
+
+
+
+
+
+
+<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="list quarto-listing-default">
+<div class="quarto-post image-right" data-index="0" data-categories="twitter,american politics,classification" data-listing-date-sort="1656396000000" data-listing-file-modified-sort="1656433307000" data-listing-reading-time-sort="5.755">
+<div class="thumbnail">
+<p><a href="./posts/incivility/index.html"> <img src="./posts/incivility/incivility.png" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/incivility/index.html">
+<h3 class="no-anchor listing-title">
+incivility on twitter &amp; politial ideology
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('twitter'); return false;">
+twitter
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('american politics'); return false;">
+american politics
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('classification'); return false;">
+classification
+</div>
+</div>
+<a href="./posts/incivility/index.html">
+<div class="listing-description">
+Per <span class="citation" data-cites="theocharis2020dynamics">Theocharis et al. (2020)</span>. A look at the prevalence of incivility towards US lawmakers on Twitter using supervised machine learning methods.
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/incivility/index.html">
+<div class="listing-date">
+Jun 28, 2022
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="1" data-categories="nlp,ner" data-listing-date-sort="1656223200000" data-listing-file-modified-sort="1656435638000" data-listing-reading-time-sort="2.5">
+<div class="thumbnail">
+<p><a href="./posts/entity-linking/index.html"> <img src="./posts/entity-linking/entity-linking.png" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/entity-linking/index.html">
+<h3 class="no-anchor listing-title">
+linking entities and wikidata
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('nlp'); return false;">
+nlp
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('ner'); return false;">
+ner
+</div>
+</div>
+<a href="./posts/entity-linking/index.html">
+<div class="listing-description">
+<p>A quick demo using the spacyfishing library</p>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/entity-linking/index.html">
+<div class="listing-date">
+Jun 26, 2022
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="2" data-categories="nlp,classification" data-listing-date-sort="1655186400000" data-listing-file-modified-sort="1655955824000" data-listing-reading-time-sort="9.195">
+<div class="thumbnail">
+<p><a href="./posts/text-class/index.html"> <img src="./posts/text-class/text-class.png" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/text-class/index.html">
+<h3 class="no-anchor listing-title">
+notes on text classification
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('nlp'); return false;">
+nlp
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('classification'); return false;">
+classification
+</div>
+</div>
+<a href="./posts/text-class/index.html">
+<div class="listing-description">
+<p>some approaches to text classification using R</p>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/text-class/index.html">
+<div class="listing-date">
+Jun 14, 2022
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="3" data-categories="python,twitter,demographics,classification" data-listing-date-sort="1654840800000" data-listing-file-modified-sort="1656361215000" data-listing-reading-time-sort="5.51">
+<div class="thumbnail">
+<p><a href="./posts/demographic-inference/index.html"> <img src="./posts/demographic-inference/demographic-inference.png" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/demographic-inference/index.html">
+<h3 class="no-anchor listing-title">
+twitter users, demographic inference &amp; reticulate
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('python'); return false;">
+python
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('twitter'); return false;">
+twitter
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('demographics'); return false;">
+demographics
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('classification'); return false;">
+classification
+</div>
+</div>
+<a href="./posts/demographic-inference/index.html">
+<div class="listing-description">
+<p>Implementing M3 for demographic inference</p>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/demographic-inference/index.html">
+<div class="listing-date">
+Jun 10, 2022
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="4" data-categories="python,lexical semantics" data-listing-date-sort="1625810400000" data-listing-file-modified-sort="1655867951000" data-listing-reading-time-sort="5.955">
+<div class="thumbnail">
+<p><a href="./posts/bert/index.html"> <img src="./posts/bert/bert.png" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/bert/index.html">
+<h3 class="no-anchor listing-title">
+BERT, reticulate &amp; lexical semantics
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('python'); return false;">
+python
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('lexical semantics'); return false;">
+lexical semantics
+</div>
+</div>
+<a href="./posts/bert/index.html">
+<div class="listing-description">
+<p>Some notes on implementing reticulate, spacy, and BERT</p>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/bert/index.html">
+<div class="listing-date">
+Jul 9, 2021
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="5" data-categories="american politics" data-listing-date-sort="1612422000000" data-listing-file-modified-sort="1655861073000" data-listing-reading-time-sort="6.485">
+<div class="thumbnail">
+<p><a href="./posts/cracking-and-packing/index.html"> <img src="./posts/cracking-and-packing/cracking-and-packing.png" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/cracking-and-packing/index.html">
+<h3 class="no-anchor listing-title">
+cracking and packing
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('american politics'); return false;">
+american politics
+</div>
+</div>
+<a href="./posts/cracking-and-packing/index.html">
+<div class="listing-description">
+<p>Gerrymandering &amp; R</p>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/cracking-and-packing/index.html">
+<div class="listing-date">
+Feb 4, 2021
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="6" data-categories="american politics,geospatial" data-listing-date-sort="1601272800000" data-listing-file-modified-sort="1655905639000" data-listing-reading-time-sort="16.12">
+<div class="thumbnail">
+<p><a href="./posts/mapping-roll-calls/index.html"> <img src="./posts/mapping-roll-calls/mapping-roll-calls.png" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/mapping-roll-calls/index.html">
+<h3 class="no-anchor listing-title">
+mapping congressional roll calls
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('american politics'); return false;">
+american politics
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('geospatial'); return false;">
+geospatial
+</div>
+</div>
+<a href="./posts/mapping-roll-calls/index.html">
+<div class="listing-description">
+<p>A ggplot reference for performing some common geo-spatial analyses</p>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/mapping-roll-calls/index.html">
+<div class="listing-date">
+Sep 28, 2020
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="7" data-categories="demographics" data-listing-date-sort="1591768800000" data-listing-file-modified-sort="1655869255000" data-listing-reading-time-sort="10.375">
+<div class="thumbnail">
+<p><a href="./posts/seven-generations/index.html"> <img src="./posts/seven-generations/seven-generations.png" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/seven-generations/index.html">
+<h3 class="no-anchor listing-title">
+the seven living generations in america
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('demographics'); return false;">
+demographics
+</div>
+</div>
+<a href="./posts/seven-generations/index.html">
+<div class="listing-description">
+<p>A quick look at the composition of American generations</p>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/seven-generations/index.html">
+<div class="listing-date">
+Jun 10, 2020
+</div>
+</a>
+</div>
+</div>
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
