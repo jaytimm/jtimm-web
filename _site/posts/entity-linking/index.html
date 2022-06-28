@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.596">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2022-06-26">
+<meta name="description" content="A quick demo using the spacyfishing library">
+
+<title>Jason Timm - linking entities and wikidata</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+<script src="../../site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<link href="../../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="../../site_libs/datatables-binding-0.23/datatables.js"></script>
+<script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="../../site_libs/dt-core-1.11.3/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="../../site_libs/dt-core-1.11.3/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="../../site_libs/dt-core-1.11.3/js/jquery.dataTables.min.js"></script>
+<link href="../../site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet">
+<script src="../../site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Jason Timm</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">linking entities and wikidata</h1>
+                  <div>
+        <div class="description">
+          A quick demo using the spacyfishing library
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">nlp</div>
+                <div class="quarto-category">ner</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 26, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#reticulate-python" id="toc-reticulate-python" class="nav-link active" data-scroll-target="#reticulate-python"> <span class="header-section-number">1</span> Reticulate &amp; Python</a></li>
+  <li><a href="#build-a-simple-news-corpus" id="toc-build-a-simple-news-corpus" class="nav-link" data-scroll-target="#build-a-simple-news-corpus"> <span class="header-section-number">2</span> Build a simple news corpus</a></li>
+  <li><a href="#spacy" id="toc-spacy" class="nav-link" data-scroll-target="#spacy"> <span class="header-section-number">3</span> spaCy</a></li>
+  <li><a href="#displacy" id="toc-displacy" class="nav-link" data-scroll-target="#displacy"> <span class="header-section-number">4</span> displaCy</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<blockquote class="blockquote">
+<p>A quick demo using the <a href="https://github.com/Lucaterre/spacyfishing">spacyfishing</a> library – “a spaCy wrapper for Entity-Fishing, a tool for named entity recognition, linking and disambiguation against Wikidata.” Facilitates disambiguating/linking named entities to the Wikidata knowledge base.</p>
+</blockquote>
+<section id="reticulate-python" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="reticulate-python"><span class="header-section-number">1</span> Reticulate &amp; Python</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> fishing</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> activate fishing</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install numpy pip pandas</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">/home/jtimm/anaconda3/envs/fishing/bin/pip</span> install spacyfishing</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> spacy download en_core_web_sm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">RETICULATE_PYTHON =</span> <span class="st">"/home/jtimm/anaconda3/envs/fishing/bin/python"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">use_condaenv</span>(<span class="at">condaenv =</span> <span class="st">"fishing"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">conda =</span> <span class="st">"/home/jtimm/anaconda3/bin/conda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="build-a-simple-news-corpus" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="build-a-simple-news-corpus"><span class="header-section-number">2</span> Build a simple news corpus</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>qn <span class="ot">&lt;-</span> quicknews<span class="sc">::</span><span class="fu">qnews_build_rss</span>(<span class="st">'war in ukraine'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  quicknews<span class="sc">::</span><span class="fu">qnews_strip_rss</span>()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>qn[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>] <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 12%">
+<col style="width: 80%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">date</th>
+<th style="text-align: left;">source</th>
+<th style="text-align: left;">title</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2022-06-28</td>
+<td style="text-align: left;">The Washington Post</td>
+<td style="text-align: left;">Latest Russia-Ukraine war news: Live updates</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022-06-27</td>
+<td style="text-align: left;">CNN</td>
+<td style="text-align: left;">June 27, 2022 Russia-Ukraine news</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2022-06-28</td>
+<td style="text-align: left;">CNBC</td>
+<td style="text-align: left;">France backs calls for Russian oil price cap; Germany calls for ‘Marshall plan’ to reconstruct Ukraine as conflict intensifies</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022-06-28</td>
+<td style="text-align: left;">The New York Times</td>
+<td style="text-align: left;">Latest G7 and Russia-Ukraine War News: Live Updates</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2022-06-23</td>
+<td style="text-align: left;">CNN</td>
+<td style="text-align: left;">June 23, 2022 Russia-Ukraine news</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>arts <span class="ot">&lt;-</span> quicknews<span class="sc">::</span><span class="fu">qnews_extract_article</span>(qn<span class="sc">$</span>link[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="at">cores =</span> <span class="dv">3</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>text_en <span class="ot">&lt;-</span> arts<span class="sc">$</span>text[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="spacy" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="spacy"><span class="header-section-number">3</span> spaCy</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> spacy </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>nlp <span class="op">=</span> spacy.load(<span class="st">"en_core_web_sm"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>nlp.add_pipe(<span class="st">"entityfishing"</span>, config<span class="op">=</span>{<span class="st">"extra_info"</span>: <span class="va">True</span>})</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>nlp.add_pipe(<span class="st">'sentencizer'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>doc <span class="op">=</span> nlp(r.text_en)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="entities-to-wikipedia" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="entities-to-wikipedia"><span class="header-section-number">3.1</span> Entities to Wikipedia</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>entities <span class="op">=</span> [(e.label_, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>             e.text, </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>             e._.normal_term, </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>             e._.kb_qid, </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>             e._.url_wikidata, </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>             e._.nerd_score,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>             e._.description) <span class="cf">for</span> e <span class="kw">in</span> doc.ents]</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>             </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>df99 <span class="op">=</span> pd.DataFrame(entities, </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                    columns<span class="op">=</span>[<span class="st">'type'</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'entity'</span>, </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'normed'</span>, </span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'qid'</span>, </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'url'</span>, </span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'score'</span>, </span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'description'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>reticulate<span class="sc">::</span>py<span class="sc">$</span>df99 <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>description) <span class="sc">|&gt;</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  DT<span class="sc">::</span><span class="fu">datatable</span>(<span class="at">rownames =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div id="htmlwidget-f551811a08b754f7f469" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f551811a08b754f7f469">{"x":{"filter":"none","vertical":false,"data":[["NORP","PERSON","GPE","GPE","NORP","PERSON","CARDINAL","NORP","ORG","DATE","ORG","TIME","ORG","GPE","DATE","NORP","NORP","ORG","NORP","PERSON","ORG","GPE","GPE","NORP","DATE","CARDINAL","TIME","GPE","GPE","NORP","DATE","ORG","ORG","PERSON","GPE","PERSON","GPE","PERSON","NORP","GPE","NORP","CARDINAL","NORP","DATE","PERSON","GPE","NORP","MONEY","DATE","PERSON","GPE","NORP","DATE","GPE","PERSON","GPE","ORG","PERSON","GPE","ORG","GPE","GPE","GPE","ORG","MONEY","NORP","ORG","DATE","NORP","GPE","ORG","ORG","NORP","GPE","GPE","GPE","LOC","NORP","GPE","GPE","ORG","NORP","GPE","GPE","GPE","GPE","GPE","FAC","GPE","PERSON","GPE","GPE","GPE","GPE","GPE","GPE","GPE","GPE","GPE","DATE","GPE","GPE","GPE","GPE","CARDINAL","ORG","PERSON","PERSON","ORG","PERSON","CARDINAL","ORG","NORP","PERSON","DATE","ORG","GPE","GPE","GPE","GPE","GPE","GPE","NORP","ORG","GPE","GPE","DATE","NORP","CARDINAL","ORG","NORP","ORG","GPE","GPE","NORP","GPE","NORP","ORG","DATE","CARDINAL","ORG","GPE","DATE","GPE","ORG","DATE","MONEY","CARDINAL","GPE","MONEY","MONEY","PERSON","DATE","GPE","DATE","PERSON","ORG","DATE","GPE","ORG","DATE","PERSON","ORG","DATE","ORG","GPE","ORG","DATE","NORP","ORG","GPE","GPE","GPE","DATE","GPE","DATE","ORDINAL","GPE","CARDINAL","ORG","ORG","GPE","NORP","PERSON","PERSON","GPE","GPE","NORP","GPE","CARDINAL","ORG","DATE","GPE","NORP","GPE","NORP","GPE","NORP","NORP","GPE","PERSON","GPE","GPE","GPE","GPE","GPE","GPE","GPE","GPE","ORG"],["Ukrainian","Volodymyr Zelensky","the United States","Moscow","Russian","Kremenchuk","at least 18","Russian","The U.N. Security Council","Tuesday","Kremenchuk","the night","Group of Seven","Germany","Tuesday","Russian","German","Olaf Scholz","Russian","Vladimir Putin","NATO","Madrid","Ukraine","Russian","Monday","at least 15","just over two minutes","The United States","Russia","Russian","Tuesday","the Treasury Department","Treasury","Janet L. Yellen","Russia","Putin","Ukraine","Baykar","Turkish","Ukrainian","Russian","three","Turkish","Monday","Bayraktar TB2","Ukraine","Ukrainians","about $20 million","three days","Serhiy Prytula","Ukrainian","Russian","Monday","Moscow","Ilya Yashin","Ukraine","Luzhniki","Irina Babloyan","Russia","Tass","Ukrainian","Rinat Akhmetov","Russia","the European Court of Human Rights","nearly $7 billion","Russian","Akhmetov’s company","Monday","Russian","Ukraine","The Azovstal Iron and Steel Works in Mariupol","Akhmetov’s","Russian","Ukrainian","Russia","Ukraine","Black Sea","Ukrainian","MITTENWALD","Germany","Group of Seven","Russian","Moscow","Ukraine","Germany","Russia","Ukraine","Schloss Elmau","Germany","Bavarian Alps","the United States","Britain","Canada","France","Germany","Italy","Japan","Moscow","Russia","Tuesday","U.S.","Washington","Russia","Ukraine","25","Biden","Jill Biden","Ashley Biden","Senate","Mitch McConnell","five","ISTANBUL","Turkish","Recep Tayyip Erdogan","Tuesday","NATO","Sweden","Finland","Turkey","Sweden","Finland","Ankara","Kurdish","NATO","Russia","Ukraine","a pivotal week","European","two","Kremlin","Bavarian","Group of Seven","Ukraine","Russia","Russian","Ukraine","Russian","Killnet","Monday","hundreds","DDoS","Jonas Skardinskas","coming days","Ukraine","Group of Seven","Tuesday","an additional $4.5 billion","More than half","the United States","About $2 billion","$760 million","Brittney Griner","July 1","Russia","more than four months","Alexander Boikov","CNN","Monday","Moscow","Khimki","six months","Boikov","the New York Times","up to two months","MITTENWALD","Germany","Group of Seven","Tuesday","Russian","The Washington Post","Russia","Ukraine","Germany","Tuesday","Russia","Tuesday","first","Ukraine","at least 18","The Russian Defense Ministry","Ukraine","the United States","European","Kremenchuk","Zelensky","the United States","Moscow","Russian","Ukraine","at least 18","NATO","Tuesday","Madrid","Russian","Ukraine","Ukrainian","The United States","Ukrainians","Russians","Ukraine","Javelin","Switchblade","the United States","Russia","Ukraine","U.S.","Ukrainian","Russia","Ukraine","Telegram"],["Ukraine",null,"United States","Moscow","Russian language","Kremenchuk",null,"Russian language",null,"Election Day (United States)","Kremenchuk","Nótt","Group of Seven (artists)","Germany","Election Day (United States)","Russian language","Germany","Olaf Scholz","Russian language","Vladimir Putin","NATO","Madrid","Ukraine","Russian language","Monday",null,null,"United States","Russia","Russian language","Election Day (United States)","United States Department of the Treasury","United States Department of the Treasury","Janet Yellen","Russia","Vladimir Putin","Ukraine",null,"Turkish language","Ukraine","Russian language","Numbers in Norse mythology","Turkish language","Monday",null,"Ukraine","Ukrainians",null,"The Three Days Rule","Serhiy Prytula","Ukraine","Russian language","Monday","Moscow","Ilya Yashin","Ukraine","Luzhniki (Moscow Central Circle)",null,"Russia","TASS","Ukraine","Rinat Akhmetov","Russia",null,null,"Russian language",null,"Monday","Russian language","Ukraine",null,null,"Russian language","Ukraine","Russia","Ukraine","Black Sea","Ukraine","Mittenwald","Germany","Group of Seven (artists)","Russian language","Moscow","Ukraine","Germany","Russia","Ukraine","Schloss Elmau","Germany","Bavarian Alps","United States","United Kingdom","Canada","France","Germany","Italy","Japan","Moscow","Russia","Election Day (United States)","United States","Washington (state)","Russia","Ukraine","25 (Adele album)","Joe Biden","Jill Biden","Joe Biden","Australian Senate","Mitch McConnell","Channel 5 (UK)","Istanbul","Turkish language","Recep Tayyip Erdoğan","Election Day (United States)","NATO","Sweden","Finland","Turkey","Sweden","Finland","Ankara","Kurds","NATO","Russia","Ukraine",null,"Ethnic groups in Europe","2","Moscow Kremlin","Kingdom of Bavaria","Group of Seven (artists)","Ukraine","Russia","Russian language","Ukraine","Russian language",null,"Monday","Hundred (county division)","Denial-of-service attack",null,"Coming Days","Ukraine","Group of Seven (artists)","Election Day (United States)",null,"Majority","United States",null,null,"Brittney Griner","July 1","Russia",null,"Alexander Boikov","CNN","Monday","Moscow","Khimki","Posthumous birth","Alexander Boikov","The New York Times",null,"Mittenwald","Germany","Group of Seven (artists)","Election Day (United States)","Russian language","The Washington Post","Russia","Ukraine","Germany","Election Day (United States)","Russia","Election Day (United States)",null,"Ukraine",null,null,"Ukraine","United States","Ethnic groups in Europe","Kremenchuk","Igor Zelensky","United States","Moscow","Russian language","Ukraine",null,"NATO","Election Day (United States)","Madrid","Russian language","Ukraine","Ukraine","United States","Ukrainians","Russians","Ukraine","Javelin throw","Switchblade","United States","Russia","Ukraine","United States","Ukraine","Russia","Ukraine","Telegram (messaging service)"],["Q212",null,"Q30","Q649","Q7737","Q156724",null,"Q7737",null,"Q11704","Q156724","Q576795","Q1547741","Q183","Q11704","Q7737","Q183","Q61053","Q7737","Q7747","Q7184","Q2807","Q212","Q7737","Q105",null,null,"Q30","Q159","Q7737","Q11704","Q648666","Q648666","Q263725","Q159","Q7747","Q212",null,"Q256","Q212","Q7737","Q3509240","Q256","Q105",null,"Q212","Q44806",null,"Q7768975","Q4379252","Q212","Q7737","Q105","Q649","Q1658622","Q212","Q22687448",null,"Q159","Q223799","Q212","Q60805","Q159",null,null,"Q7737",null,"Q105","Q7737","Q212",null,null,"Q7737","Q212","Q159","Q212","Q166","Q212","Q127553","Q183","Q1547741","Q7737","Q649","Q212","Q183","Q159","Q212","Q317768","Q183","Q7411906","Q30","Q145","Q16","Q142","Q183","Q38","Q17","Q649","Q159","Q11704","Q30","Q1223","Q159","Q212","Q21168841","Q6279","Q235349","Q6279","Q783330","Q355522","Q1062280","Q406","Q256","Q39259","Q11704","Q7184","Q34","Q33","Q43","Q34","Q33","Q3640","Q12223","Q7184","Q159","Q212",null,"Q1464982","Q200","Q133274","Q154195","Q1547741","Q212","Q159","Q7737","Q212","Q7737",null,"Q105","Q313354","Q131406",null,"Q5151911","Q212","Q1547741","Q11704",null,"Q7382648","Q30",null,null,"Q2925780","Q2700","Q159",null,"Q453526","Q48340","Q105","Q649","Q197582","Q2106128","Q453526","Q9684",null,"Q127553","Q183","Q1547741","Q11704","Q7737","Q166032","Q159","Q212","Q183","Q11704","Q159","Q11704",null,"Q212",null,null,"Q212","Q30","Q1464982","Q156724","Q4190418","Q30","Q649","Q7737","Q212",null,"Q7184","Q11704","Q2807","Q7737","Q212","Q212","Q30","Q44806","Q49542","Q212","Q178108","Q972351","Q30","Q159","Q212","Q30","Q212","Q159","Q212","Q15616276"],["https://www.wikidata.org/wiki/Q212",null,"https://www.wikidata.org/wiki/Q30","https://www.wikidata.org/wiki/Q649","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q156724",null,"https://www.wikidata.org/wiki/Q7737",null,"https://www.wikidata.org/wiki/Q11704","https://www.wikidata.org/wiki/Q156724","https://www.wikidata.org/wiki/Q576795","https://www.wikidata.org/wiki/Q1547741","https://www.wikidata.org/wiki/Q183","https://www.wikidata.org/wiki/Q11704","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q183","https://www.wikidata.org/wiki/Q61053","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q7747","https://www.wikidata.org/wiki/Q7184","https://www.wikidata.org/wiki/Q2807","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q105",null,null,"https://www.wikidata.org/wiki/Q30","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q11704","https://www.wikidata.org/wiki/Q648666","https://www.wikidata.org/wiki/Q648666","https://www.wikidata.org/wiki/Q263725","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q7747","https://www.wikidata.org/wiki/Q212",null,"https://www.wikidata.org/wiki/Q256","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q3509240","https://www.wikidata.org/wiki/Q256","https://www.wikidata.org/wiki/Q105",null,"https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q44806",null,"https://www.wikidata.org/wiki/Q7768975","https://www.wikidata.org/wiki/Q4379252","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q105","https://www.wikidata.org/wiki/Q649","https://www.wikidata.org/wiki/Q1658622","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q22687448",null,"https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q223799","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q60805","https://www.wikidata.org/wiki/Q159",null,null,"https://www.wikidata.org/wiki/Q7737",null,"https://www.wikidata.org/wiki/Q105","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q212",null,null,"https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q166","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q127553","https://www.wikidata.org/wiki/Q183","https://www.wikidata.org/wiki/Q1547741","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q649","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q183","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q317768","https://www.wikidata.org/wiki/Q183","https://www.wikidata.org/wiki/Q7411906","https://www.wikidata.org/wiki/Q30","https://www.wikidata.org/wiki/Q145","https://www.wikidata.org/wiki/Q16","https://www.wikidata.org/wiki/Q142","https://www.wikidata.org/wiki/Q183","https://www.wikidata.org/wiki/Q38","https://www.wikidata.org/wiki/Q17","https://www.wikidata.org/wiki/Q649","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q11704","https://www.wikidata.org/wiki/Q30","https://www.wikidata.org/wiki/Q1223","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q21168841","https://www.wikidata.org/wiki/Q6279","https://www.wikidata.org/wiki/Q235349","https://www.wikidata.org/wiki/Q6279","https://www.wikidata.org/wiki/Q783330","https://www.wikidata.org/wiki/Q355522","https://www.wikidata.org/wiki/Q1062280","https://www.wikidata.org/wiki/Q406","https://www.wikidata.org/wiki/Q256","https://www.wikidata.org/wiki/Q39259","https://www.wikidata.org/wiki/Q11704","https://www.wikidata.org/wiki/Q7184","https://www.wikidata.org/wiki/Q34","https://www.wikidata.org/wiki/Q33","https://www.wikidata.org/wiki/Q43","https://www.wikidata.org/wiki/Q34","https://www.wikidata.org/wiki/Q33","https://www.wikidata.org/wiki/Q3640","https://www.wikidata.org/wiki/Q12223","https://www.wikidata.org/wiki/Q7184","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q212",null,"https://www.wikidata.org/wiki/Q1464982","https://www.wikidata.org/wiki/Q200","https://www.wikidata.org/wiki/Q133274","https://www.wikidata.org/wiki/Q154195","https://www.wikidata.org/wiki/Q1547741","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q7737",null,"https://www.wikidata.org/wiki/Q105","https://www.wikidata.org/wiki/Q313354","https://www.wikidata.org/wiki/Q131406",null,"https://www.wikidata.org/wiki/Q5151911","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q1547741","https://www.wikidata.org/wiki/Q11704",null,"https://www.wikidata.org/wiki/Q7382648","https://www.wikidata.org/wiki/Q30",null,null,"https://www.wikidata.org/wiki/Q2925780","https://www.wikidata.org/wiki/Q2700","https://www.wikidata.org/wiki/Q159",null,"https://www.wikidata.org/wiki/Q453526","https://www.wikidata.org/wiki/Q48340","https://www.wikidata.org/wiki/Q105","https://www.wikidata.org/wiki/Q649","https://www.wikidata.org/wiki/Q197582","https://www.wikidata.org/wiki/Q2106128","https://www.wikidata.org/wiki/Q453526","https://www.wikidata.org/wiki/Q9684",null,"https://www.wikidata.org/wiki/Q127553","https://www.wikidata.org/wiki/Q183","https://www.wikidata.org/wiki/Q1547741","https://www.wikidata.org/wiki/Q11704","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q166032","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q183","https://www.wikidata.org/wiki/Q11704","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q11704",null,"https://www.wikidata.org/wiki/Q212",null,null,"https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q30","https://www.wikidata.org/wiki/Q1464982","https://www.wikidata.org/wiki/Q156724","https://www.wikidata.org/wiki/Q4190418","https://www.wikidata.org/wiki/Q30","https://www.wikidata.org/wiki/Q649","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q212",null,"https://www.wikidata.org/wiki/Q7184","https://www.wikidata.org/wiki/Q11704","https://www.wikidata.org/wiki/Q2807","https://www.wikidata.org/wiki/Q7737","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q30","https://www.wikidata.org/wiki/Q44806","https://www.wikidata.org/wiki/Q49542","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q178108","https://www.wikidata.org/wiki/Q972351","https://www.wikidata.org/wiki/Q30","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q30","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q159","https://www.wikidata.org/wiki/Q212","https://www.wikidata.org/wiki/Q15616276"],[0.2018,null,0.2391,0.394,0.1155,0.4553,null,0.1155,null,0.2924,0.4553,0.2926,0.658,0.3439,0.2924,0.1155,0.1183,0.7894,0.1155,0.9661,0.4438,0.3573,0.3833,0.1155,0.0826,null,null,0.2853,0.3656,0.1155,0.2924,0.4096,0.2979,0.9631,0.3656,0.3474,0.3833,null,0.1385,0.2018,0.1155,0.0826,0.1385,0.0826,null,0.3833,0.3417,null,0.1469,0.8054,0.2018,0.1155,0.0826,0.394,0.8017,0.3833,0.0903,null,0.3656,0.3538,0.2018,0.8207,0.3656,null,null,0.1155,null,0.0826,0.1155,0.3833,null,null,0.1155,0.2018,0.3656,0.3833,0.8035,0.2018,0.4456,0.3439,0.658,0.1155,0.394,0.3833,0.3439,0.3656,0.3833,0.775,0.3439,0.7859,0.2391,0.0888,0.3314,0.3523,0.3439,0.2526,0.3527,0.394,0.3656,0.2924,0.2988,0.1035,0.3656,0.3833,0.0826,0.3246,0.794,0.3379,0.101,0.9671,0.0826,0.3982,0.1385,0.9509,0.2924,0.4438,0.3509,0.3632,0.3812,0.3509,0.3632,0.6473,0.5113,0.4438,0.3656,0.3833,null,0.0826,0.0826,0.5574,0.0877,0.658,0.3833,0.3656,0.1155,0.3833,0.1155,null,0.0826,0.0918,0.4191,null,0.2924,0.3833,0.658,0.2924,null,0.4001,0.2391,null,null,0.8206,0.4386,0.3656,null,0.7175,0.4537,0.0826,0.394,0.1859,0.2909,0.2163,0.7212,null,0.4456,0.3439,0.658,0.2924,0.1155,0.794,0.3656,0.3833,0.3439,0.2924,0.3656,0.2924,null,0.3833,null,null,0.3833,0.2391,0.0826,0.4553,0.134,0.2391,0.394,0.1155,0.3833,null,0.4438,0.2924,0.3573,0.1155,0.3833,0.2018,0.2853,0.3417,0.1216,0.3833,0.1012,0.0942,0.2391,0.3656,0.3833,0.2988,0.2018,0.3656,0.3833,0.0912]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>type<\/th>\n      <th>entity<\/th>\n      <th>normed<\/th>\n      <th>qid<\/th>\n      <th>url<\/th>\n      <th>score<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="wikidata-description" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="wikidata-description"><span class="header-section-number">3.2</span> Wikidata description</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">strwrap</span>(reticulate<span class="sc">::</span>py<span class="sc">$</span>df99<span class="sc">$</span>description[[<span class="dv">3</span>]], <span class="at">width =</span> <span class="dv">60</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "The '''United States of America''' ('''USA'''), commonly" 
+ [2] "known as the '''United States''' ('''U.S.''') or"         
+ [3] "'''America''', is a [[federal republic]] composed of 50"  
+ [4] "[[U.S. state|states]], a [[Washington, D.C.|federal"      
+ [5] "district]], five major [[Territories of the United"       
+ [6] "States|self-governing territories]], and [[United States" 
+ [7] "Minor Outlying Islands|various possessions]]. Forty-eight"
+ [8] "states and the federal district are [[Contiguous United"  
+ [9] "States|contiguous]] and located in [[North America]]"     
+[10] "between [[Canada]] and [[Mexico]]. The [[Alaska|state of" </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="displacy" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="displacy"><span class="header-section-number">4</span> displaCy</h2>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spacy <span class="im">import</span> displacy</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ss <span class="op">=</span> <span class="bu">list</span>(doc.sents)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>displacy.render(ss[:<span class="dv">4</span>], style<span class="op">=</span><span class="st">"ent"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+’
+<div class="entities" style="line-height: 2.5; direction: ltr">
+<mark class="entity" style="background: #c887fb; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">Ukrainian<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">NORP</span></mark>President <mark class="entity" style="background: #aa9cfc; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">Volodymyr Zelensky<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">PERSON</span></mark>again urged <mark class="entity" style="background: #feca74; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">the United States<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">GPE</span></mark>to name <mark class="entity" style="background: #feca74; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">Moscow<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">GPE</span></mark>a state sponsor of terrorism — a designation that would trigger significant penalties — after a <mark class="entity" style="background: #c887fb; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">Russian<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">NORP</span></mark>missile strike on a shopping mall in the central city of <mark class="entity" style="background: #aa9cfc; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">Kremenchuk<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">PERSON</span></mark>killed <mark class="entity" style="background: #e4e7d2; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">at least 18<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">CARDINAL</span></mark>people.
+</div>
+
+<div class="entities" style="line-height: 2.5; direction: ltr">
+He said <mark class="entity" style="background: #c887fb; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">Russian<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">NORP</span></mark>forces deliberately targeted the mall in a “terrible terrorist attack.”
+</div>
+
+<div class="entities" style="line-height: 2.5; direction: ltr">
+<mark class="entity" style="background: #7aecec; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">The U.N. Security Council<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">ORG</span></mark>is set to discuss the strike at a meeting <mark class="entity" style="background: #bfe1d9; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">Tuesday<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">DATE</span></mark>.
+</div>
+
+<div class="entities" style="line-height: 2.5; direction: ltr">
+In <mark class="entity" style="background: #7aecec; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">Kremenchuk<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">ORG</span></mark>, rescue teams worked through <mark class="entity" style="background: #bfe1d9; padding: 0.45em 0.6em; margin: 0 0.25em; line-height: 1; border-radius: 0.35em;">the night<span style="font-size: 0.8em; font-weight: bold; line-height: 1; border-radius: 0.35em; vertical-align: middle; margin-left: 0.5rem">TIME</span></mark>as hopes of finding survivors faded.
+</div>
+<p>’</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
