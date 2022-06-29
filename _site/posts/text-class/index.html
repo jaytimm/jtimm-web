@@ -121,6 +121,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 <link rel="stylesheet" href="../../styles.css">
+<meta name="twitter:title" content="Jason Timm - notes on text classification">
+<meta name="twitter:description" content="some approaches to text classification using R">
+<meta name="twitter:image" content="https://www.jtimm.net/posts/text-class/preview.png">
+<meta name="twitter:image-height" content="671">
+<meta name="twitter:image-width" content="914">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 
 <body class="nav-fixed">
@@ -141,12 +147,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="nav-link" href="../../about.html">About</a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/jaytimm"><i class="bi bi-github" role="img">
 </i> 
  </a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+    <a class="nav-link" href="https://twitter.com/DrJayTimm"><i class="bi bi-twitter" role="img">
 </i> 
  </a>
   </li>  
@@ -197,7 +203,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul>
   <li><a href="#labeled-data" id="toc-labeled-data" class="nav-link active" data-scroll-target="#labeled-data"> <span class="header-section-number">1</span> Labeled data</a></li>
   <li><a href="#data-structures" id="toc-data-structures" class="nav-link" data-scroll-target="#data-structures"> <span class="header-section-number">2</span> Data structures</a></li>
-  <li><a href="#classification" id="toc-classification" class="nav-link" data-scroll-target="#classification"> <span class="header-section-number">3</span> Classification</a></li>
+  <li><a href="#classifiers" id="toc-classifiers" class="nav-link" data-scroll-target="#classifiers"> <span class="header-section-number">3</span> Classifiers</a></li>
   <li><a href="#evaluation" id="toc-evaluation" class="nav-link" data-scroll-target="#evaluation"> <span class="header-section-number">4</span> Evaluation</a></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"> <span class="header-section-number">5</span> Summary</a></li>
   </ul>
@@ -209,6 +215,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+<p><img src="preview2.png" class="preview-image img-fluid" style="width:100.0%"></p>
+<hr>
 <blockquote class="blockquote">
 <p>A re-worked version of a previous post. A very small survey of some simple, but effective approaches to text classification using R, with a focus on Naive Bayes and FastText classifiers.</p>
 </blockquote>
@@ -306,15 +314,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">99</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>articles0 <span class="sc">%&gt;%</span> </span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(term, date, source, title) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <colgroup>
-<col style="width: 9%">
-<col style="width: 6%">
-<col style="width: 19%">
-<col style="width: 63%">
+<col style="width: 11%">
+<col style="width: 8%">
+<col style="width: 17%">
+<col style="width: 62%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -355,36 +363,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td style="text-align: left;">Williston Daily Herald</td>
 <td style="text-align: left;">Report: U.S. records highest ever rates of substance abuse, suicide-related deaths</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">obesity</td>
-<td style="text-align: left;">2022-06-14</td>
-<td style="text-align: left;">Barbados Today</td>
-<td style="text-align: left;">Rotary Club of Barbados West tackles obesity</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">kidney_disease</td>
-<td style="text-align: left;">2022-03-21</td>
-<td style="text-align: left;">Mass General Brigham</td>
-<td style="text-align: left;">Chronic Kidney Disease Treatment | Newsroom</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">obesity</td>
-<td style="text-align: left;">2022-06-11</td>
-<td style="text-align: left;">Dove Medical Press</td>
-<td style="text-align: left;">Association between different obesity indices | DMSO</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">kidney_disease</td>
-<td style="text-align: left;">2022-05-17</td>
-<td style="text-align: left;">AJMC.com Managed Markets Network</td>
-<td style="text-align: left;">Contributor: Physician-Health Plan Collaboration Is Key to Early Identification of Chronic Kidney Disease</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">mental_health</td>
-<td style="text-align: left;">2022-06-02</td>
-<td style="text-align: left;">The Washington Post</td>
-<td style="text-align: left;">Equal mental health insurance coverage elusive despite legal guarantee</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -394,6 +372,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 data-number="2" class="anchored" data-anchor-id="data-structures"><span class="header-section-number">2</span> Data structures</h2>
 <section id="document-term-matrix" class="level3" data-number="2.1">
 <h3 data-number="2.1" class="anchored" data-anchor-id="document-term-matrix"><span class="header-section-number">2.1</span> Document-Term Matrix</h3>
+<blockquote class="blockquote">
+<p>As bag-of-words</p>
+</blockquote>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dtm <span class="ot">&lt;-</span> articles0 <span class="sc">%&gt;%</span> </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wds =</span> tokenizers<span class="sc">::</span><span class="fu">count_words</span>(text)) <span class="sc">%&gt;%</span></span>
@@ -558,7 +539,7 @@ Read 0M words
 Number of words:  5318
 Number of labels: 0
 
-Progress: 100.0% words/sec/thread:   25634 lr:  0.000000 avg.loss:  2.474763 ETA:   0h 0m 0s</code></pre>
+Progress: 100.0% words/sec/thread:   24324 lr:  0.000000 avg.loss:  2.464230 ETA:   0h 0m 0s</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fast.model <span class="ot">&lt;-</span> fastrtext<span class="sc">::</span><span class="fu">load_model</span>(tmp_file_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -569,8 +550,8 @@ Progress: 100.0% words/sec/thread:   25634 lr:  0.000000 avg.loss:  2.474763 ETA
 </div>
 </section>
 </section>
-<section id="classification" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="classification"><span class="header-section-number">3</span> Classification</h2>
+<section id="classifiers" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="classifiers"><span class="header-section-number">3</span> Classifiers</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>articles1 <span class="ot">&lt;-</span> articles0 <span class="sc">%&gt;%</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(doc_id) <span class="sc">%&gt;%</span></span>
@@ -580,8 +561,11 @@ Progress: 100.0% words/sec/thread:   25634 lr:  0.000000 avg.loss:  2.474763 ETA
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">99</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>trainIndex <span class="ot">&lt;-</span> caret<span class="sc">::</span><span class="fu">createDataPartition</span>(articles1<span class="sc">$</span>term, <span class="at">p =</span> .<span class="dv">7</span>)<span class="sc">$</span>Resample1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="document-term-matrix-naive-bayes" class="level3" data-number="3.1">
-<h3 data-number="3.1" class="anchored" data-anchor-id="document-term-matrix-naive-bayes"><span class="header-section-number">3.1</span> Document-Term Matrix &amp; Naive Bayes</h3>
+<section id="bag-of-words-naive-bayes" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="bag-of-words-naive-bayes"><span class="header-section-number">3.1</span> Bag-of-words &amp; Naive Bayes</h3>
+<blockquote class="blockquote">
+<p>Document represented as bag-of-words.</p>
+</blockquote>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dtm_train <span class="ot">&lt;-</span> dtm_sparse[trainIndex, ]</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>dtm_test <span class="ot">&lt;-</span> dtm_sparse[<span class="sc">-</span>trainIndex, ] </span>
@@ -594,93 +578,94 @@ Progress: 100.0% words/sec/thread:   25634 lr:  0.000000 avg.loss:  2.474763 ETA
 </section>
 <section id="word-embeddings-naive-bayes" class="level3" data-number="3.2">
 <h3 data-number="3.2" class="anchored" data-anchor-id="word-embeddings-naive-bayes"><span class="header-section-number">3.2</span> Word embeddings &amp; Naive Bayes</h3>
+<blockquote class="blockquote">
+<p>Document represented as an aggregate (here, mean) of constituent word embeddings. Custom/FastText word embeddings derived from <code>quicknews</code> corpus (above).</p>
+</blockquote>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>v1 <span class="ot">&lt;-</span> embeddings <span class="sc">%&gt;%</span> </span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">token =</span> <span class="fu">rownames</span>(embeddings)) <span class="sc">%&gt;%</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(token <span class="sc">%in%</span> <span class="fu">unique</span>(dtm_tok<span class="sc">$</span>token)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(dtm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Joining, by = "token"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>avg0 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">unique</span>(dtm<span class="sc">$</span>doc_id), <span class="cf">function</span>(y){</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  d0 <span class="ot">&lt;-</span> <span class="fu">subset</span>(v1, doc_id <span class="sc">==</span> y)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  d1 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(d0[, <span class="dv">1</span><span class="sc">:</span>dims])</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  d2 <span class="ot">&lt;-</span>Matrix.utils<span class="sc">::</span><span class="fu">aggregate.Matrix</span>(d1,</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">groupings =</span> <span class="fu">rep</span>(y, <span class="fu">nrow</span>(d0)),</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">fun =</span> <span class="st">'mean'</span>)</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(d2)</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>doc_embeddings <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, avg0)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(dtm)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>avg0 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">unique</span>(dtm<span class="sc">$</span>doc_id), <span class="cf">function</span>(y){</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  d0 <span class="ot">&lt;-</span> <span class="fu">subset</span>(v1, doc_id <span class="sc">==</span> y)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  d1 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(d0[, <span class="dv">1</span><span class="sc">:</span>dims])</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  d2 <span class="ot">&lt;-</span>Matrix.utils<span class="sc">::</span><span class="fu">aggregate.Matrix</span>(d1,</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">groupings =</span> <span class="fu">rep</span>(y, <span class="fu">nrow</span>(d0)),</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">fun =</span> <span class="st">'mean'</span>)</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>(d2)</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>doc_embeddings <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, avg0)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>emb_train <span class="ot">&lt;-</span> doc_embeddings[trainIndex, ]</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>emb_test <span class="ot">&lt;-</span> doc_embeddings[<span class="sc">-</span>trainIndex, ] </span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>emb_classifier <span class="ot">&lt;-</span> e1071<span class="sc">::</span><span class="fu">naiveBayes</span>(<span class="fu">as.matrix</span>(emb_train), </span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                                    articles1[trainIndex, ]<span class="sc">$</span>term, </span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">laplace =</span> <span class="fl">0.5</span>) </span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>emb_predicted <span class="ot">&lt;-</span> <span class="fu">predict</span>(emb_classifier, <span class="fu">as.matrix</span>(emb_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>emb_train <span class="ot">&lt;-</span> doc_embeddings[trainIndex, ]</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>emb_test <span class="ot">&lt;-</span> doc_embeddings[<span class="sc">-</span>trainIndex, ] </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>emb_classifier <span class="ot">&lt;-</span> e1071<span class="sc">::</span><span class="fu">naiveBayes</span>(<span class="fu">as.matrix</span>(emb_train), </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                                    articles1[trainIndex, ]<span class="sc">$</span>term, </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">laplace =</span> <span class="fl">0.5</span>) </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>emb_predicted <span class="ot">&lt;-</span> <span class="fu">predict</span>(emb_classifier, <span class="fu">as.matrix</span>(emb_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="text-classification-via-fasttext" class="level3" data-number="3.3">
-<h3 data-number="3.3" class="anchored" data-anchor-id="text-classification-via-fasttext"><span class="header-section-number">3.3</span> Text classification via FastText</h3>
+<section id="fasttext-classifier" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="fasttext-classifier"><span class="header-section-number">3.3</span> FastText classifier</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>fast_train <span class="ot">&lt;-</span> articles1[trainIndex, ]</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>fast_test <span class="ot">&lt;-</span> articles1[<span class="sc">-</span>trainIndex, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>fast_train <span class="ot">&lt;-</span> articles1[trainIndex, ]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>fast_test <span class="ot">&lt;-</span> articles1[<span class="sc">-</span>trainIndex, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Prepare data for FastText.</p>
+<p>Prepare data for FastText:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>tmp_file_model <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>train_labels <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"__label__"</span>, fast_train<span class="sc">$</span>term)</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>train_texts <span class="ot">&lt;-</span> <span class="fu">tolower</span>(fast_train<span class="sc">$</span>text)</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>train_to_write <span class="ot">&lt;-</span> <span class="fu">paste</span>(train_labels, train_texts)</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>train_tmp_file_txt <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="at">text =</span> train_to_write, <span class="at">con =</span> train_tmp_file_txt)</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>test_labels <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"__label__"</span>, fast_test<span class="sc">$</span>term)</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>test_texts <span class="ot">&lt;-</span> <span class="fu">tolower</span>(fast_test<span class="sc">$</span>text)</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>test_to_write <span class="ot">&lt;-</span> <span class="fu">paste</span>(test_labels, test_texts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tmp_file_model <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>train_labels <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"__label__"</span>, fast_train<span class="sc">$</span>term)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>train_texts <span class="ot">&lt;-</span> <span class="fu">tolower</span>(fast_train<span class="sc">$</span>text)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>train_to_write <span class="ot">&lt;-</span> <span class="fu">paste</span>(train_labels, train_texts)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>train_tmp_file_txt <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="at">text =</span> train_to_write, <span class="at">con =</span> train_tmp_file_txt)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>test_labels <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"__label__"</span>, fast_test<span class="sc">$</span>term)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>test_texts <span class="ot">&lt;-</span> <span class="fu">tolower</span>(fast_test<span class="sc">$</span>text)</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>test_to_write <span class="ot">&lt;-</span> <span class="fu">paste</span>(test_labels, test_texts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>fastrtext<span class="sc">::</span><span class="fu">execute</span>(<span class="at">commands =</span> <span class="fu">c</span>(<span class="st">"supervised"</span>, </span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-input"</span>, train_tmp_file_txt, </span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-output"</span>, tmp_file_model, </span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-dim"</span>, <span class="dv">25</span>, </span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-lr"</span>, <span class="dv">1</span>, </span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-epoch"</span>, <span class="dv">20</span>, </span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-wordNgrams"</span>, <span class="dv">2</span>, </span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-verbose"</span>, <span class="dv">1</span>))</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> fastrtext<span class="sc">::</span><span class="fu">load_model</span>(tmp_file_model)</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>fast_predicted0 <span class="ot">&lt;-</span> <span class="fu">predict</span>(model, <span class="at">sentences =</span> test_to_write)</span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>fast_predicted <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">names</span>(<span class="fu">unlist</span>(fast_predicted0)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>fastrtext<span class="sc">::</span><span class="fu">execute</span>(<span class="at">commands =</span> <span class="fu">c</span>(<span class="st">"supervised"</span>, </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-input"</span>, train_tmp_file_txt, </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-output"</span>, tmp_file_model, </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-dim"</span>, <span class="dv">25</span>, </span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-lr"</span>, <span class="dv">1</span>, </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-epoch"</span>, <span class="dv">20</span>, </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-wordNgrams"</span>, <span class="dv">2</span>, </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"-verbose"</span>, <span class="dv">1</span>))</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> fastrtext<span class="sc">::</span><span class="fu">load_model</span>(tmp_file_model)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>fast_predicted0 <span class="ot">&lt;-</span> <span class="fu">predict</span>(model, <span class="at">sentences =</span> test_to_write)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>fast_predicted <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">names</span>(<span class="fu">unlist</span>(fast_predicted0)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
 <section id="evaluation" class="level2" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="evaluation"><span class="header-section-number">4</span> Evaluation</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">'DTM'</span> <span class="ot">=</span> dtm_predicted, </span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Word embeddings'</span> <span class="ot">=</span> emb_predicted, </span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'FastText'</span> <span class="ot">=</span> fast_predicted)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">'BOW'</span> <span class="ot">=</span> dtm_predicted, </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Word embeddings'</span> <span class="ot">=</span> emb_predicted, </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'FastText'</span> <span class="ot">=</span> fast_predicted)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="model-accuracy" class="level3" data-number="4.1">
 <h3 data-number="4.1" class="anchored" data-anchor-id="model-accuracy"><span class="header-section-number">4.1</span> Model accuracy</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>conf_mats <span class="ot">&lt;-</span> <span class="fu">lapply</span>(predictions, </span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                    caret<span class="sc">::</span>confusionMatrix,</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">reference =</span> articles1[<span class="sc">-</span>trainIndex, ]<span class="sc">$</span>term)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>sums <span class="ot">&lt;-</span> <span class="fu">lapply</span>(conf_mats, <span class="st">'[['</span>, <span class="dv">3</span>) </span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>sums0 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">do.call</span>(rbind, sums)) <span class="sc">%&gt;%</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, round, <span class="dv">3</span>)</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>sums0 <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(Accuracy)) <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>conf_mats <span class="ot">&lt;-</span> <span class="fu">lapply</span>(predictions, </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                    caret<span class="sc">::</span>confusionMatrix,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">reference =</span> articles1[<span class="sc">-</span>trainIndex, ]<span class="sc">$</span>term)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>sums <span class="ot">&lt;-</span> <span class="fu">lapply</span>(conf_mats, <span class="st">'[['</span>, <span class="dv">3</span>) </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>sums0 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">do.call</span>(rbind, sums)) <span class="sc">%&gt;%</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, round, <span class="dv">3</span>)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>sums0 <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(Accuracy)) <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <thead>
@@ -701,7 +686,7 @@ Progress: 100.0% words/sec/thread:   25634 lr:  0.000000 avg.loss:  2.474763 ETA
 <td style="text-align: right;">0.832</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">DTM</td>
+<td style="text-align: left;">BOW</td>
 <td style="text-align: right;">0.661</td>
 <td style="text-align: right;">0.593</td>
 <td style="text-align: right;">0.567</td>
@@ -709,25 +694,25 @@ Progress: 100.0% words/sec/thread:   25634 lr:  0.000000 avg.loss:  2.474763 ETA
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Word embeddings</td>
-<td style="text-align: right;">0.435</td>
-<td style="text-align: right;">0.320</td>
-<td style="text-align: right;">0.343</td>
-<td style="text-align: right;">0.530</td>
+<td style="text-align: right;">0.452</td>
+<td style="text-align: right;">0.341</td>
+<td style="text-align: right;">0.359</td>
+<td style="text-align: right;">0.548</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </section>
-<section id="fasttext-model-accuracy-by-class" class="level3" data-number="4.2">
-<h3 data-number="4.2" class="anchored" data-anchor-id="fasttext-model-accuracy-by-class"><span class="header-section-number">4.2</span> FastText: Model accuracy by class</h3>
+<section id="fasttext-classifier-model-accuracy-by-class" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="fasttext-classifier-model-accuracy-by-class"><span class="header-section-number">4.2</span> FastText classifier: Model accuracy by class</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>conf_mats[[<span class="st">'FastText'</span>]]<span class="sc">$</span>byClass <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span> (Sensitivity, Specificity, Balanced.Accuracy) <span class="sc">%&gt;%</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">'topic'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">topic =</span> <span class="fu">gsub</span>(<span class="st">'Class: '</span>,<span class="st">''</span>, topic)) <span class="sc">%&gt;%</span> </span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>conf_mats[[<span class="st">'FastText'</span>]]<span class="sc">$</span>byClass <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span> (Sensitivity, Specificity, Balanced.Accuracy) <span class="sc">%&gt;%</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">'topic'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">topic =</span> <span class="fu">gsub</span>(<span class="st">'Class: '</span>,<span class="st">''</span>, topic)) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <thead>
@@ -780,27 +765,27 @@ Progress: 100.0% words/sec/thread:   25634 lr:  0.000000 avg.loss:  2.474763 ETA
 </div>
 </div>
 </section>
-<section id="fasttext-confusion-matrix" class="level3" data-number="4.3">
-<h3 data-number="4.3" class="anchored" data-anchor-id="fasttext-confusion-matrix"><span class="header-section-number">4.3</span> FastText: Confusion matrix</h3>
+<section id="fasttext-classifier-confusion-matrix" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="fasttext-classifier-confusion-matrix"><span class="header-section-number">4.3</span> FastText classifier: Confusion matrix</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dp <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(conf_mats[[<span class="st">'FastText'</span>]]<span class="sc">$</span>table)</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dp,</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> Reference, <span class="at">y =</span> Prediction)) <span class="sc">+</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="fu">log</span>(Freq)), </span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">colour =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"white"</span>, </span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">high =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="at">data =</span> dp,</span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> Reference, </span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">y =</span> Prediction, </span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">label =</span> Freq)) <span class="sc">+</span></span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.x=</span><span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>,</span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">hjust=</span><span class="dv">1</span>)) <span class="sc">+</span> </span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Confusion Matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dp <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(conf_mats[[<span class="st">'FastText'</span>]]<span class="sc">$</span>table)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> dp,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> Reference, <span class="at">y =</span> Prediction)) <span class="sc">+</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="fu">log</span>(Freq)), </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">colour =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"white"</span>, </span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">high =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="at">data =</span> dp,</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> Reference, </span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">y =</span> Prediction, </span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">label =</span> Freq)) <span class="sc">+</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.x=</span><span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>,</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">hjust=</span><span class="dv">1</span>)) <span class="sc">+</span> </span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Confusion Matrix"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
 </div>
