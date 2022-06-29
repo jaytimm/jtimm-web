@@ -340,7 +340,7 @@
     "href": "posts/incivility/index.html#house-members-details-ideology-scores",
     "title": "incivility on twitter & political ideology",
     "section": "2 House members: details & ideology scores",
-    "text": "2 House members: details & ideology scores\nThe unitedstates project provides demographic info and social details for members of congress.\n\nlibrary(dplyr)\nleg_dets <- 'https://theunitedstates.io/congress-legislators/legislators-current.csv'\nreps <- read.csv((url(leg_dets)), stringsAsFactors = FALSE) |>\n  dplyr::filter(type == 'rep')\n\nThe package Rvoteview provides access to the Voteview database and DW-Nominate ideology scores for US lawmakers.\n\nhouse_members <- Rvoteview::download_metadata(type = 'members',\n                                              chamber = 'house',\n                                              congress = '117') \n\n[1] \"/tmp/RtmpRn08Tb/H117_members.csv\""
+    "text": "2 House members: details & ideology scores\nThe unitedstates project provides demographic info and social details for members of congress.\n\nlibrary(dplyr)\nleg_dets <- 'https://theunitedstates.io/congress-legislators/legislators-current.csv'\nreps <- read.csv((url(leg_dets)), stringsAsFactors = FALSE) |>\n  dplyr::filter(type == 'rep')\n\nThe package Rvoteview provides access to the Voteview database and DW-Nominate ideology scores for US lawmakers.\n\nhouse_members <- Rvoteview::download_metadata(type = 'members',\n                                              chamber = 'house',\n                                              congress = '117') \n\n[1] \"/tmp/RtmpIn1JfV/H117_members.csv\""
   },
   {
     "objectID": "posts/incivility/index.html#twitter-mentions",
