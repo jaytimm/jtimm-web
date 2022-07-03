@@ -264,7 +264,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>generation <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="co">#'Missionary',</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                <span class="co">#'Lost',</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                <span class="co">#'Greatest',</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                <span class="st">'Greatest'</span>,</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                <span class="st">'Silent'</span>,</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">'Boomers'</span>,</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                <span class="st">'Gen X'</span>,</span>
@@ -274,7 +274,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>start_yr <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="co">#'1860-01-01',</span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>              <span class="co">#'1883-01-01',</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>              <span class="co">#'1901-01-01',</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>              <span class="st">'1901-01-01'</span>,</span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>              <span class="st">'1928-01-01'</span>,</span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>              <span class="st">'1946-01-01'</span>,</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>              <span class="st">'1965-01-01'</span>,</span>
@@ -284,7 +284,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>end_yr <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="co">#'1882-01-01',</span></span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>            <span class="co">#'1900-01-01',</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>            <span class="co">#'1927-12-31',</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>            <span class="st">'1927-12-31'</span>,</span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">'1945-12-31'</span>,</span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>            <span class="st">'1964-12-31'</span>,</span>
 <span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>            <span class="st">'1980-12-31'</span>,</span>
@@ -316,36 +316,42 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: left;">Greatest</td>
+<td style="text-align: left;">1901-01-01</td>
+<td style="text-align: left;">1927-12-31</td>
+<td style="text-align: right;">94</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Silent</td>
 <td style="text-align: left;">1928-01-01</td>
 <td style="text-align: left;">1945-12-31</td>
 <td style="text-align: right;">76</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Boomers</td>
 <td style="text-align: left;">1946-01-01</td>
 <td style="text-align: left;">1964-12-31</td>
 <td style="text-align: right;">57</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Gen X</td>
 <td style="text-align: left;">1965-01-01</td>
 <td style="text-align: left;">1980-12-31</td>
 <td style="text-align: right;">41</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Millenials</td>
 <td style="text-align: left;">1981-01-01</td>
 <td style="text-align: left;">1996-12-31</td>
 <td style="text-align: right;">25</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Gen Z</td>
 <td style="text-align: left;">1997-01-01</td>
 <td style="text-align: left;">2012-12-31</td>
 <td style="text-align: right;">9</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Post-Z</td>
 <td style="text-align: left;">2013-01-01</td>
 <td style="text-align: left;">2028-12-31</td>
