@@ -2,8 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/embeddings/index.html",
       "/posts/this-old-house/index.html",
-      "/posts/white-working/index.html",
       "/posts/daily-potus/index.html",
       "/posts/incivility/index.html",
       "/posts/entity-linking/index.html",
