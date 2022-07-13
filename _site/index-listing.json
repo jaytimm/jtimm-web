@@ -1,0 +1,16 @@
+{
+  "listing": "/index.html",
+  "items": [
+    "/posts/embeddings/index.html",
+    "/posts/this-old-house/index.html",
+    "/posts/daily-potus/index.html",
+    "/posts/incivility/index.html",
+    "/posts/entity-linking/index.html",
+    "/posts/text-class/index.html",
+    "/posts/demographic-inference/index.html",
+    "/posts/bert/index.html",
+    "/posts/cracking-and-packing/index.html",
+    "/posts/mapping-roll-calls/index.html",
+    "/posts/seven-generations/index.html"
+  ]
+}
