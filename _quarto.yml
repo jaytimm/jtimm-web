@@ -3,6 +3,7 @@ project:
 
 website:
   site-url: "https://www.jtimm.net"
+  google-analytics: "G-T6556WBG2H"
   title: "Jason Timm"
   twitter-card: true
   opengraph: true
