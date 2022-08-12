@@ -6,7 +6,7 @@
   </url>
   <url>
     <loc>https://www.jtimm.net/index.html</loc>
-    <lastmod>2022-08-09T15:46:36.000Z</lastmod>
+    <lastmod>2022-08-12T04:37:57.000Z</lastmod>
   </url>
   <url>
     <loc>https://www.jtimm.net/posts/entity-linking/index.html</loc>
@@ -39,5 +39,9 @@
   <url>
     <loc>https://www.jtimm.net/posts/embeddings/index.html</loc>
     <lastmod>2022-07-13T03:19:21.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.jtimm.net/posts/meadow/index.html</loc>
+    <lastmod>2022-08-12T04:37:55.000Z</lastmod>
   </url>
 </urlset>
