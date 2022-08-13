@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-0.9.604">
+<meta name="generator" content="quarto-0.9.596">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2022-08-11">
-<meta name="description" content="A programmtic build of a plant species reference guide using Google Images and Wikipedia">
+<meta name="description" content="A programmatic build of a plant species reference guide using Google Images and Wikipedia">
 
 <title>Jason Timm - My backyard meadow</title>
 <style>
@@ -141,7 +141,7 @@ gtag('config', 'G-T6556WBG2H', { 'anonymize_ip': true});
 
 <link rel="stylesheet" href="../../styles.css">
 <meta name="twitter:title" content="Jason Timm - My backyard meadow">
-<meta name="twitter:description" content="A programmtic build of a plant species reference guide using Google Images and Wikipedia">
+<meta name="twitter:description" content="A programmatic build of a plant species reference guide using Google Images and…">
 <meta name="twitter:image" content="https://www.jtimm.net/posts/meadow/preview.png">
 <meta name="twitter:image-height" content="580">
 <meta name="twitter:image-width" content="753">
@@ -188,7 +188,7 @@ gtag('config', 'G-T6556WBG2H', { 'anonymize_ip': true});
       <h1 class="title">My backyard meadow</h1>
                   <div>
         <div class="description">
-          A programmtic build of a plant species reference guide using Google Images and Wikipedia
+          A programmatic build of a plant species reference guide using Google Images and Wikipedia
         </div>
       </div>
                           <div class="quarto-categories">
@@ -223,7 +223,7 @@ gtag('config', 'G-T6556WBG2H', { 'anonymize_ip': true});
   <ul class="collapse">
   <li><a href="#meadow" id="toc-meadow" class="nav-link" data-scroll-target="#meadow"> <span class="header-section-number">1.1</span> Meadow</a></li>
   </ul></li>
-  <li><a href="#process" id="toc-process" class="nav-link" data-scroll-target="#process"> <span class="header-section-number">2</span> Process</a></li>
+  <li><a href="#building-guide" id="toc-building-guide" class="nav-link" data-scroll-target="#building-guide"> <span class="header-section-number">2</span> Building guide</a></li>
   <li><a href="#wildflowers" id="toc-wildflowers" class="nav-link" data-scroll-target="#wildflowers"> <span class="header-section-number">3</span> Wildflowers</a>
   <ul class="collapse">
   <li><a href="#plains-coreopsis" id="toc-plains-coreopsis" class="nav-link" data-scroll-target="#plains-coreopsis"> <span class="header-section-number">3.1</span> Plains Coreopsis</a></li>
@@ -272,59 +272,59 @@ gtag('config', 'G-T6556WBG2H', { 'anonymize_ip': true});
 <section id="intro" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="intro"><span class="header-section-number">1</span> Intro</h2>
 <p>I had a vision for turning my mess of a backyard into a <a href="https://www.highcountrygardens.com/">high desert meadow</a>. So, I planted a mixture of native grasses and wildflowers. The former is comprised of 12 warm-season grasses; the latter a collection of 18 southwest annuals/perennials. Things grow for sure. But I don’t know what is what, or what is weed.</p>
-<p>I wanted an online reference guide specific to the 30 species of wildflower and grass in my meadow. And I wanted to build this programmatically, using a single block of code, based on a simple table of scientific/common names. While also having a table of contents, headers, etc in quarto/rmarkdown.</p>
-<blockquote class="blockquote">
-<p>R process, then: (1) collect photos for each genus/species in my nascent meadow from Google using the <code>photomoe</code> package, and (2) collect a sentence or two of species description from Wikipedia using the <code>quicknews</code> package.</p>
-</blockquote>
+<p>I wanted an online reference guide specific to the 30 species of wildflower and grass in my meadow. And I wanted to build this programmatically, using a single block of code, based on a simple table of scientific/common names. While also having a table of contents, headers, etc in <code>quarto</code>.</p>
 <section id="meadow" class="level3" data-number="1.1">
 <h3 data-number="1.1" class="anchored" data-anchor-id="meadow"><span class="header-section-number">1.1</span> Meadow</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> DT<span class="sc">::</span><span class="fu">datatable</span>(df, <span class="at">rownames =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
-<div id="htmlwidget-4dc1821d56593660f997" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4dc1821d56593660f997">{"x":{"filter":"none","vertical":false,"data":[["Coreopsis tinctoria","Eschscholzia","Eschscholzia mexicana","Gaillardia pulchella","Gilia tricolor","Linum perenne lewisii","Layia platyglossa","Lupinus arizonicus","Lupinus succulentus","Mentzelia lindleyi","Nemophila maculata","Oenothera pallida","Oenothera speciosa","Phacelia campanularia","Ratibida columnifera","Aster tanacetifolius","Baileya multiradiata","Clarkia unguiculata","Bouteloua gracilis","Schizachyrium scoparium","Achnatherum hymenoides","Bouteloua curtipendula","Pleuraphis jamesii","Sporobolus airoides","Pascopyrum smithii","Sporobolus cryptandrus","Buchloe dactyloides","Festuca ovina","Nassella viridula","Lolium perenne"],["Plains Coreopsis","California Poppy","Mexican Gold Poppy","Indian Blanket","Bird's Eyes","Blue Flax","Tidy Tips","Arizona Lupine","Arroyo Lupine","Blazing Star","Five Spot","White Evening Primrose","Showy Pink Evening Primrose","California Bluebell","Mexican Hat","Prairie Aster","Desert Marigold","Farewell to Spring","Blue grama, Hachita","Little bluestem","Indian Ricegrass","Sideoats grama, El Reno","Galleta, Viva","Alkali sacaton, VNS","Western wheatgrass, Arriba","Sand dropseed, VNS","Buffalo grass, Texoka","Sheep fescue, Covar","Green needlegrass, Lodorm","Perennial ryegrass, Linn"],["flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>scientific<\/th>\n      <th>common<\/th>\n      <th>type<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scientific":["Coreopsis tinctoria","Eschscholzia","Eschscholzia mexicana","Gaillardia pulchella","Gilia tricolor","Linum perenne lewisii","Layia platyglossa","Lupinus arizonicus","Lupinus succulentus","Mentzelia lindleyi","Nemophila maculata","Oenothera pallida","Oenothera speciosa","Phacelia campanularia","Ratibida columnifera","Aster tanacetifolius","Baileya multiradiata","Clarkia unguiculata","Bouteloua gracilis","Schizachyrium scoparium","Achnatherum hymenoides","Bouteloua curtipendula","Pleuraphis jamesii","Sporobolus airoides","Pascopyrum smithii","Sporobolus cryptandrus","Buchloe dactyloides","Festuca ovina","Nassella viridula","Lolium perenne"],"common":["Plains Coreopsis","California Poppy","Mexican Gold Poppy","Indian Blanket","Bird's Eyes","Blue Flax","Tidy Tips","Arizona Lupine","Arroyo Lupine","Blazing Star","Five Spot","White Evening Primrose","Showy Pink Evening Primrose","California Bluebell","Mexican Hat","Prairie Aster","Desert Marigold","Farewell to Spring","Blue grama, Hachita","Little bluestem","Indian Ricegrass","Sideoats grama, El Reno","Galleta, Viva","Alkali sacaton, VNS","Western wheatgrass, Arriba","Sand dropseed, VNS","Buffalo grass, Texoka","Sheep fescue, Covar","Green needlegrass, Lodorm","Perennial ryegrass, Linn"],"type":["flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass"],"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-f84fcfad370989fcff9b" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f84fcfad370989fcff9b">{"x":{"filter":"none","vertical":false,"data":[["Coreopsis tinctoria","Eschscholzia","Eschscholzia mexicana","Gaillardia pulchella","Gilia tricolor","Linum perenne lewisii","Layia platyglossa","Lupinus arizonicus","Lupinus succulentus","Mentzelia lindleyi","Nemophila maculata","Oenothera pallida","Oenothera speciosa","Phacelia campanularia","Ratibida columnifera","Aster tanacetifolius","Baileya multiradiata","Clarkia unguiculata","Bouteloua gracilis","Schizachyrium scoparium","Achnatherum hymenoides","Bouteloua curtipendula","Hilaria jamesii","Sporobolus airoides","Pascopyrum smithii","Sporobolus cryptandrus","Buchloe dactyloides","Festuca ovina","Nassella viridula","Lolium perenne"],["Plains Coreopsis","California Poppy","Mexican Gold Poppy","Indian Blanket","Bird's Eyes","Blue Flax","Tidy Tips","Arizona Lupine","Arroyo Lupine","Blazing Star","Five Spot","White Evening Primrose","Showy Pink Evening Primrose","California Bluebell","Mexican Hat","Prairie Aster","Desert Marigold","Farewell to Spring","Blue grama, Hachita","Little bluestem","Indian Ricegrass","Sideoats grama, El Reno","Galleta, Viva","Alkali sacaton, VNS","Western wheatgrass, Arriba","Sand dropseed, VNS","Buffalo grass, Texoka","Sheep fescue, Covar","Green needlegrass, Lodorm","Perennial ryegrass, Linn"],["flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>scientific<\/th>\n      <th>common<\/th>\n      <th>type<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scientific":["Coreopsis tinctoria","Eschscholzia","Eschscholzia mexicana","Gaillardia pulchella","Gilia tricolor","Linum perenne lewisii","Layia platyglossa","Lupinus arizonicus","Lupinus succulentus","Mentzelia lindleyi","Nemophila maculata","Oenothera pallida","Oenothera speciosa","Phacelia campanularia","Ratibida columnifera","Aster tanacetifolius","Baileya multiradiata","Clarkia unguiculata","Bouteloua gracilis","Schizachyrium scoparium","Achnatherum hymenoides","Bouteloua curtipendula","Hilaria jamesii","Sporobolus airoides","Pascopyrum smithii","Sporobolus cryptandrus","Buchloe dactyloides","Festuca ovina","Nassella viridula","Lolium perenne"],"common":["Plains Coreopsis","California Poppy","Mexican Gold Poppy","Indian Blanket","Bird's Eyes","Blue Flax","Tidy Tips","Arizona Lupine","Arroyo Lupine","Blazing Star","Five Spot","White Evening Primrose","Showy Pink Evening Primrose","California Bluebell","Mexican Hat","Prairie Aster","Desert Marigold","Farewell to Spring","Blue grama, Hachita","Little bluestem","Indian Ricegrass","Sideoats grama, El Reno","Galleta, Viva","Alkali sacaton, VNS","Western wheatgrass, Arriba","Sand dropseed, VNS","Buffalo grass, Texoka","Sheep fescue, Covar","Green needlegrass, Lodorm","Perennial ryegrass, Linn"],"type":["flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","flower","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass","grass"],"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
 </section>
-<section id="process" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="process"><span class="header-section-number">2</span> Process</h2>
-<blockquote class="blockquote">
+<section id="building-guide" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="building-guide"><span class="header-section-number">2</span> Building guide</h2>
+<p>Process:</p>
+<ol type="1">
+<li><p>Collect photos for each genus/species from Google using the <code>photomoe</code> package;</p></li>
+<li><p>collect a sentence or two of species description from Wikipedia using the <code>quicknews</code> package; and</p></li>
+<li><p>output everything in one fell swoop.</p></li>
+</ol>
 <p>The code below is for the wildflower section; we do the same thing again for grasses. The trick, which you can’t see below, is the chunk option <code>results = 'asis'</code>, which basically allows you to generate raw markdown by <code>cat</code>-ing and <code>print</code>-ing everything. See <a href="https://bookdown.org/yihui/rmarkdown-cookbook/results-asis.html#results-asis">this section</a> of the <strong>R Markdown Cookbook</strong> for a complete discussion.</p>
-</blockquote>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">18</span>){</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">'</span><span class="sc">\n\n</span><span class="st">### '</span>, df<span class="sc">$</span>common[j], <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>, <span class="st">'&gt; '</span>, </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      df<span class="sc">$</span>scientific[j], <span class="st">'</span><span class="sc">\n\n</span><span class="st">'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="do">## get photos fro google -- build collage</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  link0 <span class="ot">&lt;-</span> photomoe<span class="sc">::</span><span class="fu">img_get_gurls</span>(df<span class="sc">$</span>scientific[j])</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  photomoe<span class="sc">::</span><span class="fu">img_download_images</span>(<span class="at">link =</span> link0, </span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                                <span class="at">dir =</span> <span class="fu">tempdir</span>(), </span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                                <span class="at">prefix =</span> df<span class="sc">$</span>scientific[j])</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  gg <span class="ot">&lt;-</span> photomoe<span class="sc">::</span><span class="fu">img_build_collage</span>(</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">paths =</span> <span class="fu">list.files</span>(<span class="fu">tempdir</span>(), <span class="at">full.names =</span> T),</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">dimx =</span> <span class="dv">5</span>,</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">dimy =</span> <span class="dv">4</span>,</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">prefix =</span> df<span class="sc">$</span>scientific[j])</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="do">## get first p node from wikipedia</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  urls <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'https://en.wikipedia.org/wiki/'</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>               <span class="fu">gsub</span>(<span class="st">' '</span>, <span class="st">'_'</span>, df<span class="sc">$</span>scientific[j]))</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  wko <span class="ot">&lt;-</span> quicknews<span class="sc">::</span><span class="fu">get_site</span>(urls) <span class="sc">|&gt;</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">subset</span>(type <span class="sc">==</span> <span class="st">'p'</span> <span class="sc">&amp;</span> <span class="fu">nchar</span>(text) <span class="sc">&gt;</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">gsub</span>(<span class="st">'</span><span class="sc">\\</span><span class="st">[[0-9]</span><span class="sc">\\</span><span class="st">]'</span>, <span class="st">''</span>, text))</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="do">##output</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">bg =</span> <span class="st">'white'</span>, <span class="at">mar=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>))</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(gg)</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">nrow</span>(wko) <span class="sc">&gt;</span> <span class="dv">0</span>){<span class="fu">cat</span>(<span class="st">'</span><span class="sc">\n</span><span class="st">'</span>, <span class="st">'&gt; '</span>, wko<span class="sc">$</span>text)}</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">'</span><span class="sc">\n\n</span><span class="st"> ---'</span>)</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="do">## get photos fro google -- build collage</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  link0 <span class="ot">&lt;-</span> photomoe<span class="sc">::</span><span class="fu">img_get_gurls</span>(df<span class="sc">$</span>scientific[j])</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  photomoe<span class="sc">::</span><span class="fu">img_download_images</span>(<span class="at">link =</span> link0, </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                                <span class="at">dir =</span> <span class="fu">tempdir</span>(), </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                                <span class="at">prefix =</span> df<span class="sc">$</span>scientific[j])</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  gg <span class="ot">&lt;-</span> photomoe<span class="sc">::</span><span class="fu">img_build_collage</span>(</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">paths =</span> <span class="fu">list.files</span>(<span class="fu">tempdir</span>(), <span class="at">full.names =</span> T),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">dimx =</span> <span class="dv">5</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">dimy =</span> <span class="dv">4</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">prefix =</span> df<span class="sc">$</span>scientific[j])</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="do">## get first p node from wikipedia</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  urls <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'https://en.wikipedia.org/wiki/'</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>               <span class="fu">gsub</span>(<span class="st">' '</span>, <span class="st">'_'</span>, df<span class="sc">$</span>scientific[j]))</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  wko <span class="ot">&lt;-</span> quicknews<span class="sc">::</span><span class="fu">get_site</span>(urls) <span class="sc">|&gt;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">subset</span>(type <span class="sc">==</span> <span class="st">'p'</span> <span class="sc">&amp;</span> <span class="fu">nchar</span>(text) <span class="sc">&gt;</span> <span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">gsub</span>(<span class="st">'</span><span class="sc">\\</span><span class="st">[[0-9]</span><span class="sc">\\</span><span class="st">]'</span>, <span class="st">''</span>, text))</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="do">##output</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">'</span><span class="sc">\n\n</span><span class="st">### '</span>, df<span class="sc">$</span>common[j], <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>, <span class="st">'&gt; '</span>, </span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>      df<span class="sc">$</span>scientific[j], <span class="st">'</span><span class="sc">\n\n</span><span class="st">'</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">bg =</span> <span class="st">'white'</span>, <span class="at">mar=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>))</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(gg)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">nrow</span>(wko) <span class="sc">&gt;</span> <span class="dv">0</span>){<span class="fu">cat</span>(<span class="st">'</span><span class="sc">\n</span><span class="st">'</span>, <span class="st">'&gt; '</span>, wko<span class="sc">$</span>text)}</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">'</span><span class="sc">\n\n</span><span class="st"> ---'</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="wildflowers" class="level2" data-number="3">
@@ -615,7 +615,7 @@ gtag('config', 'G-T6556WBG2H', { 'anonymize_ip': true});
 <section id="galleta-viva" class="level3" data-number="4.5">
 <h3 data-number="4.5" class="anchored" data-anchor-id="galleta-viva"><span class="header-section-number">4.5</span> Galleta, Viva</h3>
 <blockquote class="blockquote">
-<p>Pleuraphis jamesii</p>
+<p>Hilaria jamesii</p>
 </blockquote>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-5-5.png" class="img-fluid" width="672"></p>
