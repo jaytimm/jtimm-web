@@ -1,11 +1,11 @@
 ---
-title: ""
+title: "thoughts & notes"
 listing:
-  feed: true
   contents: posts
   sort: "date desc"
-  type: default
+  type: grid
   categories: true
+  feed: true
   sort-ui: false
   filter-ui: false
 page-layout: full
