@@ -3,8 +3,8 @@ project:
 
 website:
   title: "Jason Timm"
-  site-url: "https://www.jtimm.net"
-  description: "Some technical notes using R."
+  site-url: "https://jtimm.net/"
+  description: ""
   google-analytics: "G-T6556WBG2H"
   twitter-card: true
   opengraph: true
