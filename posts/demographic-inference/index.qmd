@@ -1,0 +1,281 @@
+---
+title: "twitter users, demographic inference & reticulate "
+description: "Implementing M3 for demographic inference"
+date: "2022-06-10"
+categories: [python, twitter, demographics, classification]
+  
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    
+bibliography: /home/jtimm/pCloudDrive/GitHub/jtimm_web/biblio.bib
+
+image: demographic-inference.png
+---
+
+
+
+> A simple code-through for using the Python library [m3inference](https://github.com/euagendas/m3inference) in R via `reticulate`. As described in @wang2019demographic. Library facilitates demographic attribute inference of Twitter users, namely, gender, age, and organizational status, based on profile images, screen names, names, and biographies. 
+
+
+
+## Reticulate & Python 
+
+First, we build a conda environment (via the terminal) comprised of `m3inference` and `pip` (and their respective dependencies).
+
+```{bash eval=FALSE}
+## <TERMINAL>
+conda create -n m3demo
+source activate m3demo
+conda install pip 
+/home/jtimm/anaconda3/envs/m3demo/bin/pip install m3inference
+```
+
+
+
+Then we establish Python and conda environment paths.
+
+```{r}
+## <R-console>
+Sys.setenv(RETICULATE_PYTHON = "/home/jtimm/anaconda3/envs/m3demo/bin/python")
+
+library(reticulate)
+#reticulate::use_python("/home/jtimm/anaconda3/envs/m3demo/bin/python")
+reticulate::use_condaenv(condaenv = "m3demo",
+                         conda = "/home/jtimm/anaconda3/bin/conda")
+```
+
+
+
+## Twitter data
+
+For demonstration purposes, we identify/extract my Twitter followers (and some of their M3-relevant features) using the `rtweet` package.
+
+```{r message=FALSE, warning=FALSE}
+## <R-console>
+library(tidyverse)
+fws  <- rtweet::get_followers(user = 'DrJayTimm') 
+
+users <- rtweet::lookup_users(fws$user_id) %>%
+  select(user_id, name, screen_name, description, profile_image_url)
+```
+
+
+
+Below is a simple hack to provide the M3 model with an actual image file for Twitter profiles that lack profile pics.  
+
+```{r}
+## <R-console>
+jk <- 'http://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png'
+jk0 <- 'https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png'
+
+dir0 <- tempdir()
+
+users2 <- users %>%
+  mutate(profile_image_url = ifelse(profile_image_url == jk, jk0, profile_image_url)) %>%
+  rename(id_str = user_id) 
+```
+
+
+
+
+## Profile pics via M3
+
+Output Twitter user details to local temp directory as a ~ `ndjson` file.
+
+```{r message=FALSE, warning=FALSE}
+## <R-console>
+tmp2 <- tempfile()
+jsonlite::stream_out(users2, file(tmp1 <- tempfile()), verbose = F)
+```
+
+
+
+In a Python console, we then import the `M3Twitter` module, and set the directory in which Twitter profile pics will be stored.  (Note that the directory established in the R chunk above is accessed below via the `r.` prefix.)
+
+```{python eval=FALSE, include=TRUE}
+## <PYTHON-console>
+from m3inference import M3Twitter
+m3twitter = M3Twitter(cache_dir = r.dir0) 
+```
+
+```{python include=FALSE}
+## <PYTHON-console>
+from m3inference import M3Twitter
+m3twitter = M3Twitter(cache_dir = r.dir0) 
+```
+
+Then, via the `transform_jsonl` function, we restructure the `ndjson`/`jsonl` file and download Twitter users' profile pics to the temp directory. This function also identifies description language.  Note: While we can download profile images and identify description language in R, things tend to go much more smoothly (& quicker) using the functionality included in `m3inference`.
+
+```{python}
+## <PYTHON-console>
+m3twitter.transform_jsonl(input_file = r.tmp1, 
+                          output_file = r.tmp2, 
+                          img_path_key = "profile_image_url")#, 
+                          #lang_key = "lang")
+```
+
+
+
+## Deomgraphic inference via M3
+
+Apply M3 classification model.  Attribute classes:  
+
+* Gender: `male`, `female`;  
+
+* Age: `<= 18`, `19-29`, `30-39`, `>=40`; and
+
+* Organization: `non-org`, `is-org`.
+
+
+
+```{python eval=FALSE}
+## <PYTHON-console>
+from m3inference import M3Inference
+m3 = M3Inference() 
+pred = m3.infer(r.tmp2)
+```
+
+
+
+### Accessing classifications
+
+Output/predictions from the Python-based M3 model can be moved into R via the (R-based) `reticulate::py` function. 
+
+```{r eval=FALSE}
+## <R-console>
+py_predictions <- reticulate::py$pred
+```
+
+
+The table below details age-gender-organization inferences by Twitter ID for a small subset of my followers.
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+## <R-console>
+df <- reshape2::melt(py_predictions) 
+df0 <- data.table::setDT(df)[, .SD[which.max(value)], by = list(L1, L2)]
+df1 <- data.table::dcast(df0, L1  ~ L2, value.var = 'L3')
+```
+
+
+
+
+```{r include=FALSE}
+setwd('/home/jtimm/pCloudDrive/GitHub/jtimm_web/data-for-posts/demographic-inference')
+#saveRDS(df1, 'm3-data.rds')
+df1 <- readRDS('m3-data.rds')
+colnames(df1)[1] <- 'id'
+```
+
+
+```{r message=FALSE, warning=FALSE}
+## <R-console>
+df1 %>% sample_n(10) %>% knitr::kable()
+```
+
+
+
+### Demographic summary
+
+
+#### By Organization
+
+```{r}
+table(df1$org)
+```
+
+
+
+#### By Age & Gender 
+
+(for followers that have not been classified as organizations):
+
+```{r}
+## <R-console>
+df2 <- df1 %>%
+  mutate(age = factor(age, levels = c('<=18', '19-29', '30-39', '>=40'))) %>%
+  filter(org != 'is-org') %>%
+  count(gender, age) %>%
+  mutate(percent = round(n/sum(n)*100,1)) %>%
+  mutate(percent = ifelse(gender == "male", percent*-1, percent))
+
+df2 %>% knitr::kable()
+```
+
+
+### Age-Gender "pyramid"
+
+```{r}
+## <R-console>
+maxs <- max(abs(df2$percent))
+df2 %>%
+  ggplot(aes(x = age, y = percent, fill =gender)) +
+  geom_col(alpha = .75) + 
+  ylim(-maxs - 1, maxs + 1) +
+  coord_flip() +
+  ggthemes::scale_fill_stata() +
+  # scale_y_continuous(breaks = c(-5, 0, 5),
+  #                    labels = c("5%", "0%", "5%")) +
+  labs(title="Inferred age-gender demographics of my followers")
+```
+
+
+
+## Profile pics & demographic inference
+
+```{r}
+## <R-console>
+users2$paths <- grep('224x224', dir(dir0, full.names = TRUE), value = T)
+
+users3 <- users2 %>%
+  arrange(id_str) %>%
+  mutate(paths = grep('224x224', dir(dir0, full.names = TRUE), value = T)) %>%
+  left_join(df1, by = c('id_str' = 'id'))
+```
+
+
+
+**A simple function** for modifying profile pics. Including: (1) "charcoal-ing" photos for user privacy, and (2) labeling photos with predicted age, gender, and organization classes.  
+
+```{r}
+## <R-console>
+modify_images <- function(paths){
+  
+  for(i in 1:length(paths)){
+    y1 <- magick::image_read(paths[i])
+    y2 <- magick::image_charcoal(y1)
+    y3 <- magick::image_border(y2, 'white', '5x5')
+    
+    ll <- paste0(users3$org[i], '\n',
+                 users3$gender[i], '\n',
+                 users3$age[i])
+    
+    y4 <- magick::image_annotate(y3, 
+                                 text = ll, 
+                                 color = "black", 
+                                 size = 26,
+                                 weight = 700,
+                                 location = "+10+10")
+        
+    magick::image_write(y4, paths[i]) 
+    }
+}
+```
+
+
+
+**Apply function**, and build a collage of profile pics with predicted demographics using the [photomoe](https://github.com/jaytimm/photomoe) package.
+
+```{r fig.height=8, out.width="100%", message=FALSE, warning=FALSE}
+## <R-console>
+modify_images(paths = users3$paths)
+
+# devtools::install_github("jaytimm/photomoe")
+photomoe::img_build_collage(paths = users3$paths, 
+                            dimx = 7, 
+                            dimy = 12)
+```
+
+

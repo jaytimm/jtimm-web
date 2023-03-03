@@ -1,0 +1,202 @@
+---
+title: "incivility on twitter & political ideology"
+description: "A look at the prevalence of incivility towards US lawmakers on Twitter"
+date: "2022-06-28"
+categories: [twitter, american politics, classification]
+  
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    
+bibliography: /home/jtimm/pCloudDrive/GitHub/jtimm_web/biblio.bib
+image: preview.png
+---
+
+![](preview2.png){width=100% .preview-image}
+
+
+---
+
+> Per @theocharis2020dynamics.   A look at the prevalence of incivility towards US lawmakers on Twitter using supervised machine learning methods.  
+
+```{r eval=FALSE, include=FALSE}
+locald <- '/home/jtimm/pCloudDrive/GitHub/git-projects/'
+```
+
+
+## Classifier
+
+The authors make their "incivility classifier" available [here](https://github.com/pablobarbera/incivility-sage-open).  
+
+```{r eval=FALSE, include=TRUE}
+setwd(locald)
+library(quanteda)
+library(glmnet)
+source("incivility-sage-open-master/functions.R")
+load("incivility-sage-open-master/data/lasso-classifier.rdata")
+load("incivility-sage-open-master/data/dfm-file.rdata")
+```
+
+
+```{r eval=FALSE, include=FALSE}
+tk <- rtweet::create_token(
+  app = "jtimm",
+  consumer_key = "tydea0GTk9cz7byVZiHUZe6Sb",
+  consumer_secret = "ZVKvVeoNL1A5SWajcU11G1dRLtHI6ZvabSueqUHkPuLNwUjE6X",
+  access_token = "965072442954690560-0hJ59HBuzs7b54DTCXj4z93iVtSTm7R",
+  access_secret = "60Ohpze1J78RBl620KlHmadHGANcI9Sr4FlLByIqBUP2i")
+```
+
+
+## House members: details & ideology scores
+
+The [unitedstates project](https://theunitedstates.io/) provides demographic info and social details for members of congress.  
+
+```{r message=FALSE, warning=FALSE}
+library(dplyr)
+leg_dets <- 'https://theunitedstates.io/congress-legislators/legislators-current.csv'
+reps <- read.csv((url(leg_dets)), stringsAsFactors = FALSE) |>
+  dplyr::filter(type == 'rep')
+```
+The package [Rvoteview](https://github.com/voteview/Rvoteview) provides access to the [Voteview](https://voteview.com/) database and DW-Nominate ideology scores for US lawmakers.
+
+```{r}
+house_members <- Rvoteview::download_metadata(type = 'members',
+                                              chamber = 'house',
+                                              congress = '117') 
+```
+
+
+
+## Twitter data
+
+### Collect tweets
+
+We use the `rtweet` package to gather the most recent tweets mentioning each member of the US House of Representatives.  Here, "mention" is in the Twitter sense, ie, a username prefixed with the `@` symbol.
+
+
+```{r eval=FALSE, include=TRUE}
+tweet_set <- lapply(paste0('@', reps$twitter),
+                    function(x) {
+                      ts <- rtweet::search_tweets(
+                        q = x,
+                        ## n = 200,
+                        type = "recent",
+                        include_rts = FALSE,
+                        geocode = NULL,
+                        max_id = NULL,
+                        parse = TRUE,
+                        token = tk,
+                        retryonratelimit = TRUE)
+                      
+                      if(nrow(ts) == 0) {return(NA)} else{
+                        
+                        ts |> dplyr::select(1:5)
+                      }
+                      }
+                    )
+```
+
+
+
+```{r eval=FALSE, include=TRUE}
+names(tweet_set) <- reps$bioguide_id
+tweet_set0 <- Filter(length, tweet_set)
+tweet_set1 <- Filter(function(a) any(!is.na(a)), tweet_set0)
+tweet_set2 <- tweet_set1 |> data.table::rbindlist(idcol = 'bioguide_id') 
+```
+
+
+
+### Classify civility
+
+```{r eval=FALSE, include=TRUE}
+tweet_set2$incivil <- predict_incivility(tweet_set2$text, 
+                                         old_dfm = dfm,
+                                         classifier = lasso)
+```
+
+
+
+```{r include=FALSE}
+setwd('/home/jtimm/pCloudDrive/GitHub/jtimm_web/data-for-posts/incivility')
+## saveRDS(tweet_set2, 'tweet_set2.rds')
+tweet_set2 <- readRDS('tweet_set2.rds')
+```
+
+
+
+### Filter tweets
+
+Subset tweet corpus to only those that mention a *single* US lawmaker.  
+
+```{r}
+tweet_set3 <- tweet_set2 |> 
+  mutate(ats = stringr::str_count(text, pattern = '\\@')) |>
+  filter(ats == 1)
+```
+
+
+@theocharis2020dynamics 's classifier computes the probability that given tweet is uncivil.  One approach is to treat that probability as an incivility score; another is to convert the probability into a categorical variable, +/- uncivil.  Here, we implement the former.  
+
+```{r}
+tsum <- tweet_set3 |> 
+  mutate(is_uncivil = ifelse(incivil > 0.5, 1, 0)) |>
+  group_by(bioguide_id) |>
+  summarise(mean_score = mean(incivil),
+            mentions = n(),
+            uncivil_mentions = sum(is_uncivil)) |>
+  dplyr::ungroup() |>
+  mutate(per_uncivil = round(uncivil_mentions/mentions*100, 1)) |>
+  merge(reps)
+```
+
+
+
+### Sample tweets
+
+```{r message=FALSE, warning=FALSE}
+set.seed(99)
+tweet_set3 |>
+  inner_join(reps) |>
+  filter(incivil > .75) |>
+  sample_n(5) %>%
+  select(full_name, state, party, text) |>
+  DT::datatable(rownames = F)
+```
+
+
+
+## Incivility & ideology
+
+Per plot below, then, tweeters tend to be less civil when mentioning (or addressing) more ideologically extreme members of Congress in their tweets.
+
+```{r fig.height=6, figure.width = '100%', message=FALSE, warning=FALSE}
+library(ggplot2)
+tsum |>
+  merge(house_members) |>
+  filter(mean_score < 0.5) |>
+  ggplot(aes(nominate_dim1, 
+             mean_score, #per_uncivil, 
+             color = as.factor(party),
+             label = last_name))+ 
+  geom_point()+ #
+  geom_smooth(method="lm", se=T) +
+  
+  ggrepel::geom_text_repel(
+    nudge_y = -0.0025,
+    segment.color = "grey50",
+    direction = "y",
+    hjust = 0, 
+    size = 2.5 ) +
+  
+  ggthemes::scale_color_stata() +
+  theme(legend.position = "none", 
+        plot.title = element_text(size=12),
+        axis.title = element_text())+
+  xlab('DW-Nominate D1') + ylab('Mean Incivility') +
+  labs(title="DW-Nominate scores & Mean Incivility scores") 
+```
+

@@ -1,0 +1,398 @@
+---
+title: "notes on text classification"
+date: "2022-06-14"
+categories: [nlp, classification]
+description: "some approaches to text classification using R"
+
+bibliography: /home/jtimm/pCloudDrive/GitHub/jtimm_web/biblio.bib
+image: preview.png
+
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+---
+
+
+![](preview2.png){width=100% .preview-image}
+
+
+---
+
+
+> A re-worked version of a previous post.  A very small survey of some simple, but effective approaches to text classification using R, with a focus on Naive Bayes and FastText classifiers.  
+
+
+
+## Labeled data
+
+For demonstration purposes, we build a corpus using the [quicknews](https://github.com/jaytimm/quicknews) package.  The corpus is comprised of articles returned from a set of health-related queries.  Search terms, then, serve as classification labels.  An imperfect annotation process, but fine for our purposes here.  As "distant" supervision.
+
+```{r eval=FALSE, include=TRUE}
+library(tidyverse)
+
+terms <- c('heart disease', 
+           'diabetes',
+           'mental health',
+           'substance abuse',
+           'obesity',
+           'kidney disease')
+
+rss <- lapply(terms, function(x) {
+  
+  quicknews::qnews_build_rss(x) %>%
+    quicknews::qnews_strip_rss() }) 
+
+names(rss) <- terms
+  
+rss0 <- rss %>%
+  bind_rows(.id = 'term') %>%
+  mutate(term = gsub(' ', '_', term)) %>%
+  distinct(link, .keep_all = TRUE) %>%
+  mutate(doc_id = as.character(row_number())) %>%
+  mutate(term = as.factor(term))  %>%
+  select(doc_id, term:link)
+```
+
+
+
+```{r eval=FALSE, include=TRUE}
+articles <- quicknews::qnews_extract_article(url = rss0$link, cores = 7) 
+articles0 <- articles %>% left_join(rss0)
+```
+
+
+
+
+```{r include=FALSE}
+library(tidyverse)
+setwd('/home/jtimm/pCloudDrive/GitHub/jtimm_web/data-for-posts/text-class/')
+#saveRDS(articles0, 'articles0.rds')
+articles0 <- readRDS('articles0.rds')
+```
+
+
+
+**Descriptives** for the resulting corpus by search term.  So, a super small demo corpus.
+
+```{r}
+articles0 %>%
+  mutate(words = tokenizers::count_words(text)) %>%
+  group_by(term) %>%
+  summarize(n = n(), words = sum(words)) %>%
+  janitor::adorn_totals() %>%
+  knitr::kable()
+```
+
+
+
+**A sample of articles** from the GoogleNews/`quicknews` query:
+
+```{r}
+set.seed(99)
+articles0 %>% 
+  select(term, date, source, title) %>% 
+  sample_n(5) %>%
+  knitr::kable()
+```
+
+
+
+
+## Data structures 
+
+### Document-Term Matrix
+
+> As bag-of-words
+
+```{r}
+dtm <- articles0 %>% 
+  mutate(wds = tokenizers::count_words(text)) %>%
+  filter(wds > 200 & wds < 1500) %>%
+  text2df::tif2token() %>%
+  text2df::token2df() %>%
+  mutate(token = tolower(token)) 
+  # mutate(stem = quanteda::char_wordstem(token))
+
+dtm %>% head() %>% knitr::kable()
+```
+
+
+```{r}
+dtm_tok <- dtm %>%  
+  count(doc_id, token) %>%
+  group_by(token) %>%
+  mutate(docf = length(unique(doc_id))) %>% ungroup() %>%
+  mutate(docf = round(docf/length(unique(doc_id)), 3 )) %>%
+  filter(docf >= 0.01 & docf < 0.5 & 
+           !grepl('^[0-9]|^[[:punct:]]', token))
+
+dtm_tok %>% head() %>% knitr::kable()
+```
+
+
+```{r}
+dtm_sparse <- dtm_tok %>%
+  tidytext::bind_tf_idf(term = token, 
+                        document = doc_id,
+                        n = n) %>% 
+  tidytext::cast_sparse(row = doc_id, 
+                        column = token, 
+                        value = tf_idf)
+```
+
+
+
+
+### Cleaned text
+
+```{r}
+ctext <- dtm %>%
+  group_by(doc_id) %>%
+  summarize(text = paste0(token, collapse = ' ')) %>% ungroup()
+
+strwrap(ctext$text[5], width = 60)[1:5]
+```
+
+
+
+### Word embeddings
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+glove_dir <- '/home/jtimm/pCloudDrive/nlp/glove-embeddings'
+setwd(glove_dir)
+glove_embeddings <- data.table::fread('glove.6B.50d.txt', 
+                                      data.table = F,  
+                                      encoding = 'UTF-8') 
+glove_embeddings0 <- as.matrix(glove_embeddings[, 2:51])
+rownames(glove_embeddings0) <- glove_embeddings$V1
+```
+
+
+```{r}
+## devtools::install_github("pommedeterresautee/fastrtext") 
+tmp_file_txt <- tempfile()
+tmp_file_model <- tempfile()
+writeLines(text = ctext$text, con = tmp_file_txt)
+dims <- 25
+window <- 5
+
+fastrtext::execute(commands = c("skipgram",
+                                "-input", tmp_file_txt, 
+                                "-output", tmp_file_model, 
+                                "-dim", gsub('^.*\\.', '', dims),
+                                "-ws", window, 
+                                "-verbose", 1))
+  
+fast.model <- fastrtext::load_model(tmp_file_model)
+fast.dict <- fastrtext::get_dictionary(fast.model)
+embeddings <- fastrtext::get_word_vectors(fast.model, fast.dict)
+```
+
+
+## Classifiers
+
+```{r}
+articles1 <- articles0 %>%
+  arrange(doc_id) %>%
+  filter(doc_id %in% unique(dtm_tok$doc_id))
+```
+
+
+```{r}
+set.seed(99)
+trainIndex <- caret::createDataPartition(articles1$term, p = .7)$Resample1
+```
+
+
+
+### Bag-of-words & Naive Bayes
+
+> Document represented as bag-of-words.
+
+```{r}
+dtm_train <- dtm_sparse[trainIndex, ]
+dtm_test <- dtm_sparse[-trainIndex, ] 
+dtm_classifier <- e1071::naiveBayes(as.matrix(dtm_train), 
+                                    articles1[trainIndex, ]$term, 
+                                    laplace = 0.5) 
+
+dtm_predicted <- predict(dtm_classifier, as.matrix(dtm_test))
+```
+
+
+
+
+### Word embeddings & Naive Bayes
+
+> Document represented as an aggregate (here, mean) of constituent word embeddings.  Custom/FastText word embeddings derived from `quicknews` corpus (above).
+
+```{r message=FALSE, warning=FALSE}
+v1 <- embeddings %>% 
+  data.frame() %>%
+  mutate(token = rownames(embeddings)) %>%
+  filter(token %in% unique(dtm_tok$token)) %>%
+  inner_join(dtm)
+
+avg0 <- lapply(unique(dtm$doc_id), function(y){
+  
+  d0 <- subset(v1, doc_id == y)
+  d1 <- as.matrix(d0[, 1:dims])
+  d2 <-Matrix.utils::aggregate.Matrix(d1,
+                                      groupings = rep(y, nrow(d0)),
+                                      fun = 'mean')
+  as.matrix(d2)
+})
+
+doc_embeddings <- do.call(rbind, avg0)
+```
+
+
+
+```{r}
+emb_train <- doc_embeddings[trainIndex, ]
+emb_test <- doc_embeddings[-trainIndex, ] 
+emb_classifier <- e1071::naiveBayes(as.matrix(emb_train), 
+                                    articles1[trainIndex, ]$term, 
+                                    laplace = 0.5) 
+
+emb_predicted <- predict(emb_classifier, as.matrix(emb_test))
+```
+
+
+
+
+### FastText classifier
+
+
+```{r}
+fast_train <- articles1[trainIndex, ]
+fast_test <- articles1[-trainIndex, ]
+```
+
+
+Prepare data for FastText:
+
+```{r}
+tmp_file_model <- tempfile()
+
+train_labels <- paste0("__label__", fast_train$term)
+train_texts <- tolower(fast_train$text)
+train_to_write <- paste(train_labels, train_texts)
+train_tmp_file_txt <- tempfile()
+writeLines(text = train_to_write, con = train_tmp_file_txt)
+
+test_labels <- paste0("__label__", fast_test$term)
+test_texts <- tolower(fast_test$text)
+test_to_write <- paste(test_labels, test_texts)
+```
+
+
+
+
+```{r eval=FALSE, include=TRUE}
+fastrtext::execute(commands = c("supervised", 
+                                "-input", train_tmp_file_txt, 
+                                "-output", tmp_file_model, 
+                                "-dim", 25, 
+                                "-lr", 1, 
+                                "-epoch", 20, 
+                                "-wordNgrams", 2, 
+                                "-verbose", 1))
+
+model <- fastrtext::load_model(tmp_file_model)
+fast_predicted0 <- predict(model, sentences = test_to_write)
+fast_predicted <- as.factor(names(unlist(fast_predicted0)))
+```
+
+
+
+```{r eval=FALSE, include=FALSE}
+ft <- caret::confusionMatrix(fast_predicted,
+                             reference = articles1[-trainIndex, ]$term)
+```
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+setwd('/home/jtimm/pCloudDrive/GitHub/jtimm_web/data-for-posts/text-class/')
+#saveRDS(fast_predicted, 'fast_predicted.rds')
+fast_predicted <- readRDS('fast_predicted.rds')
+```
+
+
+```{r eval=FALSE, include=FALSE}
+# free memory
+unlink(train_tmp_file_txt)
+unlink(tmp_file_model)
+rm(model)
+gc()
+```
+
+
+
+## Evaluation
+
+```{r}
+predictions <- list('BOW' = dtm_predicted, 
+                    'Word embeddings' = emb_predicted, 
+                    'FastText' = fast_predicted)
+```
+
+
+
+### Model accuracy
+
+```{r}
+conf_mats <- lapply(predictions, 
+                    caret::confusionMatrix,
+                    reference = articles1[-trainIndex, ]$term)
+
+sums <- lapply(conf_mats, '[[', 3) 
+sums0 <- as.data.frame(do.call(rbind, sums)) %>%
+  select(1:4) %>%
+  mutate_at(1:4, round, 3)
+
+sums0 %>% arrange(desc(Accuracy)) %>% knitr::kable()
+```
+
+
+
+### FastText classifier: Model accuracy by class
+
+```{r}
+conf_mats[['FastText']]$byClass %>% data.frame() %>%
+  select (Sensitivity, Specificity, Balanced.Accuracy) %>%
+  rownames_to_column(var = 'topic') %>%
+  mutate(topic = gsub('Class: ','', topic)) %>% 
+  mutate_if(is.numeric, round, 2) %>% 
+  knitr::kable() 
+```
+
+
+### FastText classifier: Confusion matrix
+
+```{r fig.height=6.5, message=FALSE, warning=FALSE}
+dp <- as.data.frame(conf_mats[['FastText']]$table)
+
+ggplot(data = dp,
+       aes(x = Reference, y = Prediction)) +
+  
+    geom_tile(aes(fill = log(Freq)), 
+              colour = "white") +
+    scale_fill_gradient(low = "white", 
+                        high = "steelblue") +
+  
+    geom_text(data = dp,
+              aes(x = Reference, 
+                  y = Prediction, 
+                  label = Freq)) +
+    theme(legend.position = "none",
+          axis.text.x=element_text(angle=45,
+                                   hjust=1)) + 
+    labs(title="Confusion Matrix")
+```
+
+
+## Summary
+

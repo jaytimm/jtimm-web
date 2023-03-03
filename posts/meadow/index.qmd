@@ -1,0 +1,160 @@
+---
+title: "My backyard meadow"
+description: "A programmatic build of a plant species reference guide using Google Images and Wikipedia"
+date: "2022-08-11"
+categories: [meadows]
+  
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    
+bibliography: /home/jtimm/pCloudDrive/GitHub/jtimm_web/biblio.bib
+image: preview.png
+---
+
+## Intro
+
+I had a vision for turning my mess of a backyard into a [high desert meadow](https://www.highcountrygardens.com/).  So, I planted a mixture of native grasses and wildflowers.  The former is comprised of 12 warm-season grasses; the latter a collection of 18 southwest annuals/perennials.  Things grow for sure.  But I don't know what is what, or what is weed.  
+
+I wanted an online reference guide specific to the 30 species of wildflower and grass in my meadow. And I wanted to build this programmatically, using a single block of code, based on a simple table of scientific/common names.  While also having a table of contents, headers, etc in `quarto`.  
+
+
+```{r include=FALSE}
+library(dplyr)
+setwd('/home/jtimm/pCloudDrive/GitHub/jtimm_web/data-for-posts/meadow')
+df <- read.csv('meadow.csv')
+```
+
+
+### Meadow
+
+```{r}
+df |> DT::datatable(df, rownames = F)
+```
+
+
+## Building guide
+
+Process: 
+
+(1) Collect photos for each genus/species from Google using the `photomoe` package;
+
+(2) collect a sentence or two of species description from Wikipedia using the `quicknews` package; and
+
+
+(3) output everything in one fell swoop.
+
+
+The code below is for the wildflower section; we do the same thing again for grasses.  The trick, which you can't see below, is the chunk option `results = 'asis'`, which basically allows you to generate raw markdown by `cat`-ing and `print`-ing everything.  See [this section](https://bookdown.org/yihui/rmarkdown-cookbook/results-asis.html#results-asis) of the **R Markdown Cookbook** for a complete discussion.  
+
+```{r eval=FALSE}
+for(j in 1:18){
+  ## get photos fro google -- build collage
+  link0 <- photomoe::img_get_gurls(df$scientific[j])
+  photomoe::img_download_images(link = link0, 
+                                dir = tempdir(), 
+                                prefix = df$scientific[j])
+
+  gg <- photomoe::img_build_collage(
+    paths = list.files(tempdir(), full.names = T),
+    dimx = 5,
+    dimy = 4,
+    prefix = df$scientific[j])
+  
+  ## get first p node from wikipedia
+  urls <- paste0('https://en.wikipedia.org/wiki/',
+               gsub(' ', '_', df$scientific[j]))
+
+  wko <- quicknews::get_site(urls) |>
+    subset(type == 'p' & nchar(text) > 3) |>
+    slice(1) |> 
+    mutate(text = gsub('\\[[0-9]\\]', '', text))
+  
+  ##output
+  cat('\n\n### ', df$common[j], '\n', '> ', 
+      df$scientific[j], '\n\n')
+  par(bg = 'white', mar=c(0,0,0,0))
+  plot(gg)
+  if(nrow(wko) > 0){cat('\n', '> ', wko$text)}
+  cat('\n\n ---')
+}
+```
+
+
+
+## Wildflowers
+
+```{r echo=FALSE, results='asis'}
+for(j in 1:18){
+  
+  cat('\n\n### ',  df$common[j], '\n', '> ', df$scientific[j], '\n\n')
+  
+  link0 <- photomoe::img_get_gurls(df$scientific[j])
+  photomoe::img_download_images(link = link0, 
+                                dir = tempdir(), 
+                                prefix = df$scientific[j])
+
+  gg <- photomoe::img_build_collage(paths = list.files(tempdir(), 
+                                                 full.names = T), 
+                              dimx = 5, 
+                              dimy = 4, 
+                              prefix = df$scientific[j])
+  
+  urls <- paste0('https://en.wikipedia.org/wiki/',
+               gsub(' ', '_', df$scientific[j]))
+
+  wko <- quicknews::get_site(urls) |>
+    subset(type == 'p' & tokenizers::count_words(text) > 20) |>
+    slice(1) |> mutate(text = gsub('\\[[0-9]\\]', '', text))
+  
+  par(bg = 'white', mar=c(0,0,0,0))
+  plot(gg)
+ 
+  if(nrow(wko) > 0){
+    cat('\n', '> ', wko$text)
+  }
+  
+  cat('\n\n ---')
+}
+```
+
+
+
+
+## Grasses
+
+```{r echo=FALSE, results='asis'}
+for(j in 19:30){
+
+  cat('\n\n### ',  df$common[j], '\n', '> ', df$scientific[j], '\n\n')
+  
+  link0 <- photomoe::img_get_gurls(df$scientific[j])
+  photomoe::img_download_images(link = link0, 
+                                dir = tempdir(), 
+                                prefix = df$scientific[j])
+
+  gg <- photomoe::img_build_collage(paths = list.files(tempdir(), 
+                                                 full.names = T), 
+                              dimx = 5, 
+                              dimy = 4, 
+                              prefix = df$scientific[j])
+  
+  urls <- paste0('https://en.wikipedia.org/wiki/',
+               gsub(' ', '_', df$scientific[j]))
+
+  wko <- quicknews::get_site(urls) |>
+    subset(type == 'p' & tokenizers::count_words(text) > 20) |>
+    slice(1) |> mutate(text = gsub('\\[[0-9]\\]', '', text))
+  
+  par(bg = 'white', mar=c(0,0,0,0))
+  plot(gg)
+ 
+  if(nrow(wko) > 0){
+    cat('\n', '> ', wko$text)
+  }
+  
+  cat('\n\n ---')
+}
+```

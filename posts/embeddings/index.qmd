@@ -1,0 +1,267 @@
+---
+title: "global word embeddings in R"
+date: "2022-07-12"
+categories: [nlp, lexical semantics]
+description: 'A uniform approach'
+
+bibliography: /home/jtimm/pCloudDrive/GitHub/jtimm_web/biblio.bib
+image: preview.png
+
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+---
+
+
+![](preview.png){width=100% .preview-image}
+
+> A uniform approach to global word embeddings in R.
+
+
+---
+
+
+## Some text data via PubMed
+
+```{r include=FALSE}
+key <- '4f47f85a9cc03c4031b3dc274c2840b06108'
+```
+
+
+```{r warning=FALSE, message=FALSE}
+library(dplyr)
+pmids <- PubmedMTK::pmtk_search_pubmed(search_term = 'medical marijuana', 
+                                       fields = c('TIAB','MH'),
+                                       verbose = F)
+
+abstracts0 <- PubmedMTK::pmtk_get_records2(pmids = pmids$pmid, 
+                                          cores = 6, 
+                                          ncbi_key = key) |> 
+  data.table::rbindlist() |> 
+  filter(!is.na(abstract)) |>
+  mutate(abstract = tolower(abstract))
+```
+
+
+
+## Data structures & parameters
+
+### Tokenization
+
+```{r}
+toks <- abstracts0 |> 
+  rename(doc_id = pmid, text = abstract) |>
+  text2df::tif2token()
+```
+
+
+
+```{r}
+mwes <- text2df::tok2collocations(toks, remove_stops = T)
+toks0 <- toks |> text2df::token2mwe(mwes)
+```
+
+
+### TIF
+
+```{r}
+ntif <- data.frame(doc_id = abstracts0$pmid,
+                   text = unlist(lapply(toks0, paste0, collapse = ' ')))
+```
+
+
+
+### Model parameters
+
+```{r}
+dims <- 50
+window <- 5
+min_count <- 5
+```
+
+
+
+## GloVe embeddings
+
+```{r include=FALSE}
+it <- text2vec::itoken(toks0, progressbar = FALSE)
+vocab <- text2vec::create_vocabulary(it) |>
+  text2vec::prune_vocabulary(term_count_min = min_count)
+
+vectorizer <- text2vec::vocab_vectorizer(vocab)
+tcm <- text2vec::create_tcm(it, vectorizer, skip_grams_window = window)
+
+glove <- text2vec::GlobalVectors$new(rank = dims, x_max = 10)
+wv_main <- glove$fit_transform(tcm, 
+                               n_iter = 10, 
+                               convergence_tol = 0.01, 
+                               n_threads = 6)
+
+glove_embeddings <- wv_main + t(glove$components)
+```
+
+
+```{r eval=FALSE}
+it <- text2vec::itoken(toks0, progressbar = FALSE)
+vocab <- text2vec::create_vocabulary(it) |>
+  text2vec::prune_vocabulary(term_count_min = min_count)
+
+vectorizer <- text2vec::vocab_vectorizer(vocab)
+tcm <- text2vec::create_tcm(it, vectorizer, skip_grams_window = window)
+
+glove <- text2vec::GlobalVectors$new(rank = dims, x_max = 10)
+wv_main <- glove$fit_transform(tcm, 
+                               n_iter = 10, 
+                               convergence_tol = 0.01, 
+                               n_threads = 6)
+wv_context <- glove$components
+glove_embeddings <- wv_main + t(wv_context)
+```
+
+
+
+
+## word2vec/doc2vec embeddings
+
+```{r}
+## d2v <- list(dm = 'PV-DM', bow = 'PV-DBOW')
+model.d2v <- doc2vec::paragraph2vec(x = ntif, 
+                                    type = "PV-DM", 
+                                    dim = dims, 
+                                    iter = 20,
+                                    min_count = min_count, 
+                                    lr = 0.05, 
+                                    threads = 5)
+
+d2v_embeddings <- as.matrix(model.d2v, which = "words")
+```
+
+
+
+
+## fastText embeddings
+
+```{r include=FALSE}
+## devtools::install_github("pommedeterresautee/fastrtext") 
+tmp_file_txt <- tempfile()
+tmp_file_model <- tempfile()
+writeLines(text = ntif$text, con = tmp_file_txt)
+
+fastrtext::execute(commands = c("skipgram",
+                                "-input", tmp_file_txt, 
+                                "-output", tmp_file_model, 
+                                "-dim", gsub('^.*\\.', '', dims),
+                                "-ws", window, 
+                                "-minCount", min_count,
+                                "-verbose", 1))
+
+fast.model <- fastrtext::load_model(tmp_file_model)
+fast.dict <- fastrtext::get_dictionary(fast.model)
+fast_embeddings <- fastrtext::get_word_vectors(fast.model, fast.dict)
+```
+
+```{r eval=FALSE}
+## devtools::install_github("pommedeterresautee/fastrtext") 
+tmp_file_txt <- tempfile()
+tmp_file_model <- tempfile()
+writeLines(text = ntif$text, con = tmp_file_txt)
+
+fastrtext::execute(commands = c("skipgram",
+                                "-input", tmp_file_txt, 
+                                "-output", tmp_file_model, 
+                                "-dim", gsub('^.*\\.', '', dims),
+                                "-ws", window, 
+                                "-minCount", min_count,
+                                "-verbose", 1))
+
+fast.model <- fastrtext::load_model(tmp_file_model)
+fast.dict <- fastrtext::get_dictionary(fast.model)
+fast_embeddings <- fastrtext::get_word_vectors(fast.model, fast.dict)
+```
+
+
+## Pretrained GloVe embeddings
+
+```{r include=FALSE}
+locald <- '/home/jtimm/pCloudDrive/nlp/glove-embeddings/'
+```
+
+
+
+```{r eval=FALSE}
+setwd(locald)
+glove.6B.50d <- data.table::fread('glove.6B.50d.txt')
+glove_pretrained <- as.matrix(glove.6B.50d[, 2:51])
+rownames(glove_pretrained) <- glove.6B.50d$V1
+glove_pretrained <- subset(glove_pretrained, 
+                           rownames(glove_pretrained) %in% fast.dict)
+```
+
+
+
+```{r include=FALSE}
+setwd('/home/jtimm/pCloudDrive/GitHub/jtimm_web/data-for-posts')
+# saveRDS(glove_pretrained, 'glove_pretrained.rds')
+glove_pretrained <- readRDS('glove_pretrained.rds')
+```
+
+
+
+
+## Semantics & cosine similarity 
+
+### Collate models
+
+> Note that the pretrained GloVe model does not include multi-word expressions. 
+
+```{r}
+models <- list('glove' = glove_embeddings,
+               'word2vec' = d2v_embeddings,
+               'fastText' = fast_embeddings,
+               'glove_pretrained' = glove_pretrained)
+
+lapply(models, dim)
+```
+
+
+
+### Cosine similarity 
+
+```{r}
+quick_cosine <- function (embeddings,
+                          target, 
+                          n = 9) {
+  
+  if(is.character(target)){
+    t0 <- embeddings[target, , drop = FALSE]} else{t0 <- target}
+
+  cos_sim <- text2vec::sim2(x = embeddings,
+                            y = t0,
+                            method = "cosine",
+                            norm = "l2")
+
+  x1 <- head(sort(cos_sim[,1], decreasing = TRUE), n+1)
+
+  data.frame(rank = 1:(n+1),
+             term1 = rownames(t0),
+             term2 = names(x1),
+             value = round(x1, 3),
+             row.names = NULL)
+}
+```
+
+
+
+```{r}
+lapply(models, quick_cosine, target = 'legalization') |> #'legality'
+  data.table::rbindlist(idcol = 'model') |>
+  select(-term1, -value) |>
+  tidyr::spread(model, term2) |>
+  knitr::kable()
+```
+
+
+
+

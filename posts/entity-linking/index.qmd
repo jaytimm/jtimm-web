@@ -1,0 +1,139 @@
+---
+title: "linking entities and wikidata"
+date: "2022-06-26"
+categories: [nlp, ner, python]
+description: "A quick demo using the spacyfishing python library"
+
+bibliography: /home/jtimm/pCloudDrive/GitHub/jtimm_web/biblio.bib
+image: preview.png
+
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+---
+
+![](preview.png){width=100% .preview-image}
+
+---
+
+
+> A quick demo using the [spacyfishing](https://github.com/Lucaterre/spacyfishing) library -- "a spaCy wrapper for Entity-Fishing, a tool for named entity recognition, linking and disambiguation against Wikidata."  Facilitates disambiguating/linking named entities to the Wikidata knowledge base.
+
+
+
+## Reticulate & Python
+
+```{bash eval=FALSE, include=TRUE}
+conda create -n fishing
+source activate fishing
+conda install numpy pip pandas
+/home/jtimm/anaconda3/envs/fishing/bin/pip install spacyfishing
+python -m spacy download en_core_web_sm
+```
+
+```{r}
+Sys.setenv(RETICULATE_PYTHON = "/home/jtimm/anaconda3/envs/fishing/bin/python")
+reticulate::use_condaenv(condaenv = "fishing",
+                         conda = "/home/jtimm/anaconda3/bin/conda")
+```
+
+## Build a simple news corpus
+
+```{r}
+qn <- quicknews::qnews_build_rss('war in ukraine') |>
+  quicknews::qnews_strip_rss()
+
+qn[1:5,1:3] |> knitr::kable() 
+```
+
+```{r}
+arts <- quicknews::qnews_extract_article(qn$link[1:3], cores = 3)
+text_en <- arts$text[1]
+```
+
+## spaCy
+
+```{python eval=TRUE, include=FALSE} 
+import spacy 
+nlp = spacy.load("en_core_web_sm")
+nlp.add_pipe("entityfishing", config={"extra_info": True})
+nlp.add_pipe('sentencizer')
+```
+
+
+```{python eval=FALSE, include=TRUE} 
+import spacy 
+nlp = spacy.load("en_core_web_sm")
+nlp.add_pipe("entityfishing", config={"extra_info": True})
+nlp.add_pipe('sentencizer')
+```
+
+
+```{python}
+doc = nlp(r.text_en)
+```
+
+```{python eval=FALSE, include=FALSE}
+# 
+# d = []
+# for idno, sentence in enumerate(doc.sents):
+#     d.append({"id": idno, "sentence":str(sentence)})
+#     print 'Sentence {}:'.format(idno + 1), sentence 
+#     
+# df = pd.DataFrame(d)
+
+#reticulate::py$df |> dplyr::slice(1:5) |> knitr::kable()
+```
+
+### Entities to Wikipedia
+
+```{python}
+import pandas as pd
+entities = [(e.label_, 
+             e.text, 
+             e._.normal_term, 
+             e._.kb_qid, 
+             e._.url_wikidata, 
+             e._.nerd_score,
+             e._.description) for e in doc.ents]
+             
+df99 = pd.DataFrame(entities, 
+                    columns=['type',
+                             'entity', 
+                             'normed', 
+                             'qid', 
+                             'url', 
+                             'score', 
+                             'description'])
+```
+
+
+
+```{r}
+reticulate::py$df99 |> 
+  dplyr::select(-description) |> 
+  DT::datatable(rownames = F)
+```
+
+
+
+### Wikidata description
+
+```{r}
+strwrap(reticulate::py$df99$description[[3]], width = 60)[1:10]
+```
+
+
+
+## displaCy
+
+```{python, results='asis'}
+from spacy import displacy
+ss = list(doc.sents)
+
+displacy.render(ss[:4], style="ent")
+```
+
+
